@@ -1,31 +1,33 @@
 package com.baconatornoveg.stg;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Random;
 import java.util.Scanner;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class SmiteTeamGenerator {
     private final Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
-    private String bootsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/SmiteTeamGenerator/master/Lists/boots.csv";
-    private String godsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/SmiteTeamGenerator/master/Lists/gods.csv";
-    private String itemsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/SmiteTeamGenerator/master/Lists/items.csv";
-
     private final ArrayList<Item> BOOTS = new ArrayList<>();
     private final ArrayList<God> GODS = new ArrayList<>();
     private final ArrayList<Item> ITEMS = new ArrayList<>();
 
-    public SmiteTeamGenerator() {
+    private boolean isForcingOffensive = false;
+    private boolean isForcingDefensive = false;
 
+    private Random rand = new Random();
+
+    public SmiteTeamGenerator() {
+        // Methods to be called on creation
+    }
+
+    public String getVersion() {
+        return "2.0.0";
     }
 
     public void getLists(boolean local) {
@@ -36,8 +38,11 @@ public class SmiteTeamGenerator {
         if (!local) {
             LOGGER.info("Fetching the lists from Github...");
             try {
+                String bootsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/STG-Lib/master/Lists/boots.csv";
                 URL bootsUrl = new URL(bootsRemoteUrl);
+                String godsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/STG-Lib/master/Lists/gods.csv";
                 URL godsUrl = new URL(godsRemoteUrl);
+                String itemsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/STG-Lib/master/Lists/items.csv";
                 URL itemsUrl = new URL(itemsRemoteUrl);
                 bootsFile = bootsUrl.openStream();
                 godsFile = godsUrl.openStream();
@@ -87,5 +92,171 @@ public class SmiteTeamGenerator {
         in.close();
         LOGGER.info(BOOTS.toString() + "\n" + GODS.toString() + "\n" + ITEMS.toString());
         LOGGER.info("Smite Team Generator successfully loaded " + BOOTS.size() + " boots, " + GODS.size() + " gods, and " + ITEMS.size() + " items.");
+    }
+
+    public ArrayList<String> makeLoadout(String position) {
+        String player = null;
+        String playerBuild = null;
+        ArrayList<Item> build;
+
+        switch (position.toLowerCase()) {
+
+            case "mage":
+                player = getGod("Mage").toString();
+                build = generateBuild("mage", "magical", false);
+                if (isForcingOffensive) {
+                    while (true) {
+                        int offensiveCount = 0;
+                        for (Item i : build) {
+                            if (i.isOffensive()) {
+                                offensiveCount++;
+                            }
+                        }
+                        if (offensiveCount < 5) {
+                            build = generateBuild("mage", "magical", false);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                playerBuild = build.toString();
+                break;
+
+            case "guardian":
+                player = getGod("Guardian").toString();
+                build = generateBuild("guardian", "magical", false);
+                if (isForcingDefensive) {
+                    while (true) {
+                        int defensiveCount = 0;
+                        for (Item i : build) {
+                            if (i.isDefensive()) {
+                                defensiveCount++;
+                            }
+                        }
+                        if (defensiveCount < 5) {
+                            build = generateBuild("guardian", "magical", false);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                playerBuild = build.toString();
+                break;
+        }
+
+        ArrayList<String> loadout = new ArrayList<>();
+        loadout.add(player);
+        loadout.add(playerBuild);
+        return loadout;
+    }
+
+    private ArrayList<Item> generateBuild(String god, String type, boolean isRatatoskr) {
+        ArrayList<Item> build = new ArrayList<>();
+        LinkedHashSet<Item> generation = new LinkedHashSet<>();
+        Item newItem;
+        if (type.equals("physical")) {
+            switch (god.toLowerCase()) {
+                case "assassin":
+                case "hunter":
+                    if (isRatatoskr) {
+                        generation.add(new Item("Acorn of Yggdrasil", "true", "false", "OFFENSE"));
+                    } else {
+                        generation.add(getPhysicalBoot(isForcingOffensive));
+                    }
+                    break;
+                case "warrior":
+                    generation.add(getPhysicalBoot(false));
+                    break;
+            }
+            for (int i = 0; i < 5; i++) {
+                newItem = getItem("physical");
+                generation.add(newItem);
+            }
+
+            while (generation.size() < 6) {
+                newItem = getItem("physical");
+                generation.add(newItem);
+            }
+
+            build.addAll(0, generation);
+        } else {
+            switch (god) {
+                case "mage":
+                    generation.add(getMagicalBoot(isForcingOffensive, false));
+                    break;
+                case "guardian":
+                    generation.add(getMagicalBoot(false, isForcingDefensive));
+                    break;
+            }
+            for (int i = 0; i < 5; i++) {
+                newItem = getItem("magical");
+                generation.add(newItem);
+            }
+
+            while (generation.size() < 6) {
+                newItem = getItem("magical");
+                generation.add(newItem);
+            }
+            build.addAll(0, generation);
+        }
+        return build;
+    }
+
+    private Item getPhysicalBoot(boolean isOffensive) {
+        Item boot;
+        boot = BOOTS.get(rand.nextInt(BOOTS.size()));
+        if (isOffensive) {
+            while (boot.isMagical() || !boot.isOffensive()) {
+                boot = BOOTS.get(rand.nextInt(BOOTS.size()));
+            }
+        } else {
+            while (boot.isMagical()) {
+                boot = BOOTS.get(rand.nextInt(BOOTS.size()));
+            }
+        }
+        return boot;
+    }
+
+    private Item getMagicalBoot(boolean isOffensive, boolean isDefensive) {
+        Item boot;
+        boot = BOOTS.get(rand.nextInt(BOOTS.size()));
+        if (isOffensive) {
+            while (boot.isPhysical() || !boot.isOffensive()) {
+                boot = BOOTS.get((rand.nextInt(BOOTS.size())));
+            }
+        } else if (isDefensive) {
+            while (boot.isPhysical() || !boot.isDefensive()) {
+                boot = BOOTS.get(rand.nextInt(BOOTS.size()));
+            }
+        } else {
+            while (boot.isPhysical()) {
+                boot = BOOTS.get(rand.nextInt(BOOTS.size()));
+            }
+        }
+        return boot;
+    }
+
+    private Item getItem(String type) {
+        Item item;
+        Boolean physical = type.toLowerCase().equals("physical");
+        item = ITEMS.get((int) (Math.random() * (ITEMS.size() - 1) + 1));
+        if (physical) {
+            while (item.isMagical()) {
+                item = ITEMS.get((int) (Math.random() * (ITEMS.size() - 1) + 1));
+            }
+        } else {
+            while (item.isPhysical()) {
+                item = ITEMS.get((int) (Math.random() * (ITEMS.size() - 1) + 1));
+            }
+        }
+        return item;
+    }
+
+    private God getGod(String position) {
+        God god = GODS.get(rand.nextInt(GODS.size() - 1));
+        while (!god.getPosition().toLowerCase().equals(position.toLowerCase())) {
+            god = GODS.get(rand.nextInt(GODS.size() - 1));
+        }
+        return god;
     }
 }
