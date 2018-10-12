@@ -1,4 +1,4 @@
-package com.baconatornoveg.stg;
+package com.baconatornoveg.stglib;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -21,6 +21,10 @@ public class SmiteTeamGenerator {
     private boolean isForcingDefensive = false;
 
     private Random rand = new Random();
+
+    private enum Positions {
+        ASSASSIN, HUNTER, MAGE, WARRIOR, GUARDIAN
+    }
 
     public SmiteTeamGenerator() {
         // Methods to be called on creation
@@ -91,17 +95,30 @@ public class SmiteTeamGenerator {
         }
         in.close();
         LOGGER.info(BOOTS.toString() + "\n" + GODS.toString() + "\n" + ITEMS.toString());
-        LOGGER.info("Smite Team Generator successfully loaded " + BOOTS.size() + " boots, " + GODS.size() + " gods, and " + ITEMS.size() + " items.");
+        LOGGER.info("Smite Player Generator successfully loaded " + BOOTS.size() + " boots, " + GODS.size() + " gods, and " + ITEMS.size() + " items.");
     }
 
-    public ArrayList<String> makeLoadout(String position) {
+    public Team generateTeam(int size, boolean forceOffensive, boolean forceDefensive, boolean forceBalanced) {
+        isForcingOffensive = forceOffensive;
+        isForcingDefensive = forceDefensive;
+        Team team = new Team();
+        Positions[] positions = Positions.values();
+        for (int i = 0; i < size; i++) {
+            Player loadout = makeLoadout(positions[(int)(Math.random() * (positions.length))]);
+            team.add(loadout);
+        }
+
+        return team;
+    }
+
+    private Player makeLoadout(Positions position) {
         String player = null;
-        String playerBuild = null;
+        ArrayList<Item> playerBuild = null;
         ArrayList<Item> build;
 
-        switch (position.toLowerCase()) {
+        switch (position) {
 
-            case "mage":
+            case MAGE:
                 player = getGod("Mage").toString();
                 build = generateBuild("mage", "magical", false);
                 if (isForcingOffensive) {
@@ -119,10 +136,10 @@ public class SmiteTeamGenerator {
                         }
                     }
                 }
-                playerBuild = build.toString();
+                playerBuild = build;
                 break;
 
-            case "guardian":
+            case GUARDIAN:
                 player = getGod("Guardian").toString();
                 build = generateBuild("guardian", "magical", false);
                 if (isForcingDefensive) {
@@ -140,10 +157,10 @@ public class SmiteTeamGenerator {
                         }
                     }
                 }
-                playerBuild = build.toString();
+                playerBuild = build;
                 break;
 
-            case "warrior":
+            case WARRIOR:
                 player = getGod("Warrior").toString();
                 build = generateBuild("warrior", "physical", false);
                 if (isForcingOffensive) {
@@ -161,10 +178,10 @@ public class SmiteTeamGenerator {
                         }
                     }
                 }
-                playerBuild = build.toString();
+                playerBuild = build;
                 break;
 
-            case "assassin":
+            case ASSASSIN:
                 player = getGod("Assassin").toString();
                 build = generateBuild("assassin", "physical", (player.equals("Ratatoskr")));
                 if (isForcingOffensive) {
@@ -182,10 +199,10 @@ public class SmiteTeamGenerator {
                         }
                     }
                 }
-                playerBuild = build.toString();
+                playerBuild = build;
                 break;
 
-            case "hunter":
+            case HUNTER:
                 player = getGod("Hunter").toString();
                 build = generateBuild("hunter", "physical", false);
                 if (isForcingOffensive) {
@@ -203,14 +220,11 @@ public class SmiteTeamGenerator {
                         }
                     }
                 }
-                playerBuild = build.toString();
+                playerBuild = build;
                 break;
         }
 
-        ArrayList<String> loadout = new ArrayList<>();
-        loadout.add(player);
-        loadout.add(playerBuild);
-        return loadout;
+        return new Player(player, playerBuild);
     }
 
     private ArrayList<Item> generateBuild(String god, String type, boolean isRatatoskr) {

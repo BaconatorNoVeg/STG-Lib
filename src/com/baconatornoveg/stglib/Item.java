@@ -1,4 +1,4 @@
-package com.baconatornoveg.stg;
+package com.baconatornoveg.stglib;
 
 public class Item {
 
