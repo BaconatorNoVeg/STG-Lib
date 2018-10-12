@@ -142,6 +142,69 @@ public class SmiteTeamGenerator {
                 }
                 playerBuild = build.toString();
                 break;
+
+            case "warrior":
+                player = getGod("Warrior").toString();
+                build = generateBuild("warrior", "physical", false);
+                if (isForcingOffensive) {
+                    while (true) {
+                        int offensiveCount = 0;
+                        for (Item i : build) {
+                            if (i.isOffensive()) {
+                                offensiveCount++;
+                            }
+                        }
+                        if (offensiveCount < 4) {
+                            build = generateBuild("warrior", "physical", false);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                playerBuild = build.toString();
+                break;
+
+            case "assassin":
+                player = getGod("Assassin").toString();
+                build = generateBuild("assassin", "physical", (player.equals("Ratatoskr")));
+                if (isForcingOffensive) {
+                    while (true) {
+                        int offensiveCount = 0;
+                        for (Item i : build) {
+                            if (i.isOffensive()) {
+                                offensiveCount++;
+                            }
+                        }
+                        if (offensiveCount < 5) {
+                            build = generateBuild("assassin", "physical", (player.equals("Ratatoskr")));
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                playerBuild = build.toString();
+                break;
+
+            case "hunter":
+                player = getGod("Hunter").toString();
+                build = generateBuild("hunter", "physical", false);
+                if (isForcingOffensive) {
+                    while (true) {
+                        int offensiveCount = 0;
+                        for (Item i : build) {
+                            if (i.isOffensive()) {
+                                offensiveCount++;
+                            }
+                        }
+                        if (offensiveCount < 5) {
+                            build = generateBuild("hunter", "physical", false);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                playerBuild = build.toString();
+                break;
         }
 
         ArrayList<String> loadout = new ArrayList<>();
@@ -258,5 +321,17 @@ public class SmiteTeamGenerator {
             god = GODS.get(rand.nextInt(GODS.size() - 1));
         }
         return god;
+    }
+
+    public ArrayList<Item> getBOOTS() {
+        return BOOTS;
+    }
+
+    public ArrayList<Item> getITEMS() {
+        return ITEMS;
+    }
+
+    public ArrayList<God> getGODS() {
+        return GODS;
     }
 }
