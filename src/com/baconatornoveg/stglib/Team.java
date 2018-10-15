@@ -22,4 +22,12 @@ public class Team {
         return gods;
     }
 
+    public int getSize() {
+        return team.size();
+    }
+
+    public String getPlayerGod(int index) {
+        return team.get(index).getGod();
+    }
+
 }

@@ -1,12 +1,12 @@
 package com.baconatornoveg.stglib;
 
+import javax.swing.text.Position;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 
 
@@ -98,14 +98,45 @@ public class SmiteTeamGenerator {
         LOGGER.info("Smite Player Generator successfully loaded " + BOOTS.size() + " boots, " + GODS.size() + " gods, and " + ITEMS.size() + " items.");
     }
 
+    // Implementing Fisher–Yates shuffle
+    private static void shufflePositions(Positions[] ar)
+    {
+        // If running on Java 6 or older, use `new Random()` on RHS here
+        Random rnd = ThreadLocalRandom.current();
+        for (int i = ar.length - 1; i > 0; i--)
+        {
+            int index = rnd.nextInt(i + 1);
+            // Simple swap
+            Positions a = ar[index];
+            ar[index] = ar[i];
+            ar[i] = a;
+        }
+    }
+
     public Team generateTeam(int size, boolean forceOffensive, boolean forceDefensive, boolean forceBalanced) {
         isForcingOffensive = forceOffensive;
         isForcingDefensive = forceDefensive;
         Team team = new Team();
         Positions[] positions = Positions.values();
-        for (int i = 0; i < size; i++) {
-            Player loadout = makeLoadout(positions[(int)(Math.random() * (positions.length))]);
-            team.add(loadout);
+        if (forceBalanced) {
+            // Does not produce dupes
+            shufflePositions(positions);
+            for (int i = 0; i < size; i++) {
+                Player loadout = makeLoadout(positions[i]);
+                team.add(loadout);
+            }
+
+        } else {
+            // This currently has around a 0.04% chance to generate a team with duplicate gods
+            for (int i = 0; i < size; i++) {
+                Player loadout = makeLoadout(positions[(int)(Math.random() * (positions.length))]);
+                for (int j = 0; j < team.getSize(); j++) {
+                    while (loadout.getGod().equals(team.getPlayerGod(j))) {
+                        loadout = makeLoadout(positions[(int)(Math.random() * (positions.length))]);
+                    }
+                }
+                team.add(loadout);
+            }
         }
 
         return team;
