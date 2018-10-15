@@ -128,6 +128,7 @@ public class SmiteTeamGenerator {
 
         } else {
             // This currently has around a 0.04% chance to generate a team with duplicate gods
+            // TODO: Fix this
             for (int i = 0; i < size; i++) {
                 Player loadout = makeLoadout(positions[(int)(Math.random() * (positions.length))]);
                 for (int j = 0; j < team.getSize(); j++) {
