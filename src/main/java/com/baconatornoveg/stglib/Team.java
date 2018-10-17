@@ -26,8 +26,19 @@ public class Team {
         return team.size();
     }
 
-    public String getPlayerGod(int index) {
-        return team.get(index).getGod();
+    public Player getPlayer(int index) {
+        return team.get(index);
+    }
+
+    public String toString() {
+        String returnString = "";
+
+        returnString += "Generated Team: \n";
+        for (int i = 0; i < team.size(); i++) {
+            returnString += team.get(i).getGod() + " - " + team.get(i).getBuild() + "\n";
+        }
+
+        return returnString;
     }
 
 }

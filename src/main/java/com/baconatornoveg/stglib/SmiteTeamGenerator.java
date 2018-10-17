@@ -132,7 +132,7 @@ public class SmiteTeamGenerator {
             for (int i = 0; i < size; i++) {
                 Player loadout = makeLoadout(positions[(int)(Math.random() * (positions.length))]);
                 for (int j = 0; j < team.getSize(); j++) {
-                    while (loadout.getGod().equals(team.getPlayerGod(j))) {
+                    while (loadout.getGod().equals(team.getPlayer(j).getGod())) {
                         loadout = makeLoadout(positions[(int)(Math.random() * (positions.length))]);
                     }
                 }
