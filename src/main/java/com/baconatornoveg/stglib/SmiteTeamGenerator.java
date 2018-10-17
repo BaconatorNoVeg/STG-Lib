@@ -1,11 +1,11 @@
 package com.baconatornoveg.stglib;
 
-import javax.swing.text.Position;
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 
@@ -57,9 +57,9 @@ public class SmiteTeamGenerator {
         } else {
             LOGGER.info("Using the local lists...");
             try {
-                bootsFile = new FileInputStream("Lists/boots.csv");
-                godsFile = new FileInputStream("Lists/gods.csv");
-                itemsFile = new FileInputStream("Lists/items.csv");
+                bootsFile = getClass().getResourceAsStream("/boots.csv");
+                godsFile = getClass().getResourceAsStream("/gods.csv");
+                itemsFile = getClass().getResourceAsStream("/items.csv");
             } catch (Exception e) {
                 e.printStackTrace();
             }
