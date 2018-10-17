@@ -7,17 +7,19 @@ public class Player {
     private String god;
     private ArrayList<Item> build;
 
-    public Player(String god, ArrayList<Item> build) {
+    Player(String god, ArrayList<Item> build) {
         this.god = god;
         this.build = build;
     }
 
-    public String getGod() {
+    String getGod() {
         return this.god;
     }
 
-    public String getBuild() {
-        return build.toString();
+    ArrayList<String> getBuild() {
+        ArrayList<String> buildList = new ArrayList<>();
+        for (Item aBuild : build) buildList.add(aBuild.toString());
+        return buildList;
     }
 
     public String toString() {
