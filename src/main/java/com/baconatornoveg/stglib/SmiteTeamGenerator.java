@@ -39,8 +39,9 @@ public class SmiteTeamGenerator {
         InputStream bootsFile = null;
         InputStream godsFile = null;
         InputStream itemsFile = null;
+        boolean useLocal = local;
         if (!local) {
-            LOGGER.info("Fetching the lists from Github...");
+            LOGGER.info("Attempting to fetch the current lists from Github...");
             try {
                 String bootsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/STG-Lib/master/Lists/boots.csv";
                 URL bootsUrl = new URL(bootsRemoteUrl);
@@ -53,9 +54,13 @@ public class SmiteTeamGenerator {
                 itemsFile = itemsUrl.openStream();
             } catch (Exception e) {
                 e.printStackTrace();
+                LOGGER.info("Failed to get the lists from GitHub. Falling back to compiled lists.");
+                useLocal = true;
             }
-        } else {
-            LOGGER.info("Using the local lists...");
+        }
+
+        if (local || useLocal){
+            LOGGER.info("Using the compiled lists, these could be out of date...");
             try {
                 bootsFile = getClass().getResourceAsStream("/boots.csv");
                 godsFile = getClass().getResourceAsStream("/gods.csv");
