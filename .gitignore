@@ -1,5 +1,7 @@
 .gradle
-.idea
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/tasks.xml
 /build/
 
 # Ignore Gradle GUI config
