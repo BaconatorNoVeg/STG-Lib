@@ -22,6 +22,10 @@ public class Team {
         return gods;
     }
 
+    public void set(int index, Player player) {
+        team.set(index, player);
+    }
+
     public int getSize() {
         return team.size();
     }

@@ -124,7 +124,7 @@ public class SmiteTeamGenerator {
         Team team = new Team();
         Positions[] positions = Positions.values();
         if (forceBalanced) {
-            // Does not produce dupes
+            // Generate a team that does not duplicate positions
             shufflePositions(positions);
             for (int i = 0; i < size; i++) {
                 Player loadout = makeLoadout(positions[i]);
@@ -132,16 +132,29 @@ public class SmiteTeamGenerator {
             }
 
         } else {
-            // This currently has around a 0.04% chance to generate a team with duplicate gods
-            // TODO: Fix this
+            // Generate a team that can have more than one god of the same position
             for (int i = 0; i < size; i++) {
                 Player loadout = makeLoadout(positions[(int)(Math.random() * (positions.length))]);
-                for (int j = 0; j < team.getSize(); j++) {
-                    while (loadout.getGod().equals(team.getPlayer(j).getGod())) {
-                        loadout = makeLoadout(positions[(int)(Math.random() * (positions.length))]);
+                team.add(loadout);
+            }
+            boolean dupes = true;
+            while(dupes) {
+                dupes = false;
+                for (int i = 0; i < size; i++) {
+                    Player currentPlayer = team.getPlayer(i);
+                    for (int j = 0; j < size; j++) {
+                        if (i != j) {
+                            if (currentPlayer.getGod().equals(team.getPlayer(j).getGod())) {
+                                dupes = true;
+                                team.set(j, makeLoadout(positions[(int)(Math.random() * (positions.length))]));
+                                break;
+                            }
+                        }
+                    }
+                    if (dupes) {
+                        break;
                     }
                 }
-                team.add(loadout);
             }
         }
 
