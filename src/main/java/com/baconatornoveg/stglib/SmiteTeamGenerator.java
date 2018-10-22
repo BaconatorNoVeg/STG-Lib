@@ -259,7 +259,10 @@ public class SmiteTeamGenerator {
                     while (true) {
                         int offensiveCount = 0;
                         for (Item i : build) {
-                            if (i.isOffensive()) {
+                            if (i.toString().equals("Hastened Katana") || i.toString().equals("Masamune") || i.toString().equals("Stone Cutting Sword") || i.toString().equals("Golden Blade")) {
+                                build = generateBuild("hunter", "physical", false);
+                                break;
+                            } else if (i.isOffensive()) {
                                 offensiveCount++;
                             }
                         }
