@@ -4,15 +4,15 @@ import java.util.ArrayList;
 
 public class Player {
 
-    private String god;
+    private God god;
     private ArrayList<Item> build;
 
-    public Player(String god, ArrayList<Item> build) {
+    public Player(God god, ArrayList<Item> build) {
         this.god = god;
         this.build = build;
     }
 
-    public String getGod() {
+    public God getGod() {
         return this.god;
     }
 

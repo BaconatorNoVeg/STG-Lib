@@ -19,10 +19,11 @@ public class SmiteTeamGenerator {
 
     private boolean isForcingOffensive = false;
     private boolean isForcingDefensive = false;
+    public boolean isForcingBalanced = false;
 
     private Random rand = new Random();
 
-    private enum Positions {
+    public enum Positions {
         ASSASSIN, HUNTER, MAGE, WARRIOR, GUARDIAN
     }
 
@@ -31,7 +32,7 @@ public class SmiteTeamGenerator {
     }
 
     public String getVersion() {
-        return "1.1.2";
+        return "1.2.0";
     }
 
     public void getLists(boolean local) {
@@ -121,7 +122,8 @@ public class SmiteTeamGenerator {
     public Team generateTeam(int size, boolean forceOffensive, boolean forceDefensive, boolean forceBalanced) {
         isForcingOffensive = forceOffensive;
         isForcingDefensive = forceDefensive;
-        Team team = new Team();
+        isForcingBalanced = forceBalanced;
+        Team team = new Team(this);
         Positions[] positions = Positions.values();
         if (forceBalanced) {
             // Generate a team that does not duplicate positions
@@ -161,15 +163,15 @@ public class SmiteTeamGenerator {
         return team;
     }
 
-    private Player makeLoadout(Positions position) {
-        String player = null;
+    public Player makeLoadout(Positions position) {
+        God player = null;
         ArrayList<Item> playerBuild = null;
         ArrayList<Item> build;
 
         switch (position) {
 
             case MAGE:
-                player = getGod("Mage").toString();
+                player = getGod("Mage");
                 build = generateBuild("mage", "magical", false);
                 if (isForcingOffensive) {
                     while (true) {
@@ -190,7 +192,7 @@ public class SmiteTeamGenerator {
                 break;
 
             case GUARDIAN:
-                player = getGod("Guardian").toString();
+                player = getGod("Guardian");
                 build = generateBuild("guardian", "magical", false);
                 if (isForcingDefensive) {
                     while (true) {
@@ -211,7 +213,7 @@ public class SmiteTeamGenerator {
                 break;
 
             case WARRIOR:
-                player = getGod("Warrior").toString();
+                player = getGod("Warrior");
                 build = generateBuild("warrior", "physical", false);
                 if (isForcingOffensive) {
                     while (true) {
@@ -232,7 +234,7 @@ public class SmiteTeamGenerator {
                 break;
 
             case ASSASSIN:
-                player = getGod("Assassin").toString();
+                player = getGod("Assassin");
                 build = generateBuild("assassin", "physical", (player.equals("Ratatoskr")));
                 if (isForcingOffensive) {
                     while (true) {
@@ -253,7 +255,7 @@ public class SmiteTeamGenerator {
                 break;
 
             case HUNTER:
-                player = getGod("Hunter").toString();
+                player = getGod("Hunter");
                 build = generateBuild("hunter", "physical", false);
                 if (isForcingOffensive) {
                     while (true) {

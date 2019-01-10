@@ -5,9 +5,10 @@ import java.util.ArrayList;
 public class Team {
 
     ArrayList<Player> team = new ArrayList<>();
+    SmiteTeamGenerator stg;
 
-    public Team() {
-
+    public Team(SmiteTeamGenerator stg) {
+        this.stg = stg;
     }
 
     public void add(Player player) {
@@ -17,7 +18,7 @@ public class Team {
     public ArrayList<String> getGods() {
         ArrayList<String> gods = new ArrayList<>();
         for (Player i : team) {
-            gods.add(i.getGod());
+            gods.add(i.getGod().getName());
         }
         return gods;
     }
@@ -32,6 +33,33 @@ public class Team {
 
     public Player getPlayer(int index) {
         return team.get(index);
+    }
+
+    public void rerollPlayer(int index) {
+        Player selectedPlayer = team.get(index);
+        team.remove(index);
+        Player rerollingPlayer;
+        SmiteTeamGenerator.Positions[] positions = SmiteTeamGenerator.Positions.values();
+        if (!stg.isForcingBalanced) {
+            ArrayList<God> taken = new ArrayList<>();
+            for (Player i : team) {
+                taken.add(i.getGod());
+            }
+            rerollingPlayer = stg.makeLoadout(positions[(int)(Math.random() * (positions.length))]);
+            boolean testing = true;
+            while (testing) {
+                testing = false;
+                for (God takenGod : taken) {
+                    if (rerollingPlayer.getGod().equals(takenGod)) {
+                        rerollingPlayer = stg.makeLoadout(positions[(int) (Math.random() * (positions.length))]);
+                        testing = true;
+                        break;
+                    }
+                }
+            }
+        } else {
+            
+        }
     }
 
     public String toString() {
