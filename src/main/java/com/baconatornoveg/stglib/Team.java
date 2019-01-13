@@ -35,7 +35,7 @@ public class Team {
         return team.get(index);
     }
 
-    public void rerollPlayer(int index) {
+    public Player rerollPlayer(int index) {
         Player selectedPlayer = team.get(index);
         team.remove(index);
         Player rerollingPlayer;
@@ -57,8 +57,10 @@ public class Team {
                     }
                 }
             }
+            return rerollingPlayer;
         } else {
-            
+            System.out.println("Not implemented yet");
+            return null;
         }
     }
 

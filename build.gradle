@@ -17,7 +17,7 @@ dependencies {
 // Archive info
 jar {
     baseName 'STGLib'
-    version '1.1.3'
+    version '1.2.0'
 }
 
 // In this section you declare where to find the dependencies of your project
