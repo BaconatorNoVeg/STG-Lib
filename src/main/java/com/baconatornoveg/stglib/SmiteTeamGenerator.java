@@ -235,7 +235,7 @@ public class SmiteTeamGenerator {
 
             case ASSASSIN:
                 player = getGod("Assassin");
-                build = generateBuild("assassin", "physical", (player.equals("Ratatoskr")));
+                build = generateBuild("assassin", "physical", (player.getName().equals("Ratatoskr")));
                 if (isForcingOffensive) {
                     while (true) {
                         int offensiveCount = 0;
@@ -245,7 +245,7 @@ public class SmiteTeamGenerator {
                             }
                         }
                         if (offensiveCount < 5) {
-                            build = generateBuild("assassin", "physical", (player.equals("Ratatoskr")));
+                            build = generateBuild("assassin", "physical", (player.getName().equals("Ratatoskr")));
                         } else {
                             break;
                         }
