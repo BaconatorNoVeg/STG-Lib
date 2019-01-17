@@ -58,8 +58,23 @@ public class Team {
             }
             set(index, rerollingPlayer);
         } else {
-            System.out.println("Not implemented yet");
-            set(index, null);
+            ArrayList<String> takenPositions = new ArrayList<>();
+            for (Player i : team) {
+                takenPositions.add(i.getGod().getPosition());
+            }
+            rerollingPlayer = stg.makeLoadout(positions[(int)(Math.random() * (positions.length))]);
+            boolean testing = true;
+            while (testing) {
+                testing = false;
+                for (String takenPosition : takenPositions) {
+                    if (rerollingPlayer.getGod().getPosition().equals(takenPosition)) {
+                        rerollingPlayer = stg.makeLoadout(positions[(int) (Math.random() * (positions.length))]);
+                        testing = true;
+                        break;
+                    }
+                }
+            }
+            set(index, rerollingPlayer);
         }
     }
 
