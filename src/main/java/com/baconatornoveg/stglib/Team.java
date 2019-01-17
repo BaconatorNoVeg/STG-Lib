@@ -62,6 +62,7 @@ public class Team {
             for (Player i : team) {
                 takenPositions.add(i.getGod().getPosition());
             }
+            takenPositions.remove(index);
             rerollingPlayer = stg.makeLoadout(positions[(int)(Math.random() * (positions.length))]);
             boolean testing = true;
             while (testing) {
