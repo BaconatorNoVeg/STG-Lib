@@ -385,9 +385,9 @@ public class SmiteTeamGenerator {
     }
 
     private God getGod(String position) {
-        God god = GODS.get(rand.nextInt(GODS.size() - 1));
+        God god = GODS.get((int)(Math.random() * (GODS.size())));
         while (!god.getPosition().toLowerCase().equals(position.toLowerCase())) {
-            god = GODS.get(rand.nextInt(GODS.size() - 1));
+            god = GODS.get((int)(Math.random() * (GODS.size())));
         }
         return god;
     }
