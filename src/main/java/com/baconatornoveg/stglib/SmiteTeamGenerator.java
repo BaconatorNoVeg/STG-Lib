@@ -17,8 +17,8 @@ public class SmiteTeamGenerator {
     private final ArrayList<God> GODS = new ArrayList<>();
     private final ArrayList<Item> ITEMS = new ArrayList<>();
 
-    private boolean isForcingOffensive = false;
-    private boolean isForcingDefensive = false;
+    public boolean isForcingOffensive = false;
+    public boolean isForcingDefensive = false;
     public boolean isForcingBalanced = false;
 
     private Random rand = new Random();
@@ -60,7 +60,7 @@ public class SmiteTeamGenerator {
             }
         }
 
-        if (local || useLocal){
+        if (local || useLocal) {
             LOGGER.info("Using the compiled lists, these could be out of date...");
             try {
                 bootsFile = getClass().getResourceAsStream("/boots.csv");
@@ -76,7 +76,7 @@ public class SmiteTeamGenerator {
 
         in.nextLine();
 
-        while(in.hasNextLine()) {
+        while (in.hasNextLine()) {
             String line = in.nextLine();
             String[] values = line.split(",");
             BOOTS.add(new Item(values[0], values[1], values[2], values[3]));
@@ -85,7 +85,7 @@ public class SmiteTeamGenerator {
         in = new Scanner(godsFile);
         in.nextLine();
 
-        while(in.hasNextLine()) {
+        while (in.hasNextLine()) {
             String line = in.nextLine();
             String[] values = line.split(",");
             GODS.add(new God(values[0], values[1]));
@@ -94,7 +94,7 @@ public class SmiteTeamGenerator {
         in = new Scanner(itemsFile);
         in.nextLine();
 
-        while(in.hasNextLine()) {
+        while (in.hasNextLine()) {
             String line = in.nextLine();
             String[] values = line.split(",");
             ITEMS.add(new Item(values[0], values[1], values[2], values[3]));
@@ -105,12 +105,10 @@ public class SmiteTeamGenerator {
     }
 
     // Implementing Fisher–Yates shuffle
-    private static void shufflePositions(Positions[] ar)
-    {
+    private static void shufflePositions(Positions[] ar) {
         // If running on Java 6 or older, use `new Random()` on RHS here
         Random rnd = ThreadLocalRandom.current();
-        for (int i = ar.length - 1; i > 0; i--)
-        {
+        for (int i = ar.length - 1; i > 0; i--) {
             int index = rnd.nextInt(i + 1);
             // Simple swap
             Positions a = ar[index];
@@ -136,11 +134,11 @@ public class SmiteTeamGenerator {
         } else {
             // Generate a team that can have more than one god of the same position
             for (int i = 0; i < size; i++) {
-                Player loadout = makeLoadout(positions[(int)(Math.random() * (positions.length))]);
+                Player loadout = makeLoadout(positions[(int) (Math.random() * (positions.length))]);
                 team.add(loadout);
             }
             boolean dupes = true;
-            while(dupes) {
+            while (dupes) {
                 dupes = false;
                 for (int i = 0; i < size; i++) {
                     Player currentPlayer = team.getPlayer(i);
@@ -148,7 +146,7 @@ public class SmiteTeamGenerator {
                         if (i != j) {
                             if (currentPlayer.getGod().equals(team.getPlayer(j).getGod())) {
                                 dupes = true;
-                                team.set(j, makeLoadout(positions[(int)(Math.random() * (positions.length))]));
+                                team.set(j, makeLoadout(positions[(int) (Math.random() * (positions.length))]));
                                 break;
                             }
                         }
@@ -181,7 +179,7 @@ public class SmiteTeamGenerator {
                                 offensiveCount++;
                             }
                         }
-                        if (offensiveCount < 5) {
+                        if (offensiveCount < 6) {
                             build = generateBuild("mage", "magical", false);
                         } else {
                             break;
@@ -202,7 +200,7 @@ public class SmiteTeamGenerator {
                                 defensiveCount++;
                             }
                         }
-                        if (defensiveCount < 5) {
+                        if (defensiveCount < 6) {
                             build = generateBuild("guardian", "magical", false);
                         } else {
                             break;
@@ -244,7 +242,7 @@ public class SmiteTeamGenerator {
                                 offensiveCount++;
                             }
                         }
-                        if (offensiveCount < 5) {
+                        if (offensiveCount < 6) {
                             build = generateBuild("assassin", "physical", (player.getName().equals("Ratatoskr")));
                         } else {
                             break;
@@ -257,14 +255,17 @@ public class SmiteTeamGenerator {
             case HUNTER:
                 player = getGod("Hunter");
                 build = generateBuild("hunter", "physical", false);
-                if (isForcingOffensive) {
-                    while (true) {
-                        int offensiveCount = 0;
+                while (true) {
+                    ArrayList<String> buildItems = new ArrayList<>();
+                    for (Item i : build) {
+                        buildItems.add(i.toString());
+                    }
+                    int offensiveCount = 0;
+                    if (buildItems.contains("Hastened Katana") || buildItems.contains("Stone Cutting Sword") || buildItems.contains("Masamune") || buildItems.contains("Golden Blade")) {
+                        build = generateBuild("hunter", "physical", false);
+                    } else if (isForcingOffensive) {
                         for (Item i : build) {
-                            if (i.toString().equals("Hastened Katana") || i.toString().equals("Masamune") || i.toString().equals("Stone Cutting Sword") || i.toString().equals("Golden Blade")) {
-                                build = generateBuild("hunter", "physical", false);
-                                break;
-                            } else if (i.isOffensive()) {
+                            if (i.isOffensive()) {
                                 offensiveCount++;
                             }
                         }
@@ -273,6 +274,8 @@ public class SmiteTeamGenerator {
                         } else {
                             break;
                         }
+                    } else {
+                        break;
                     }
                 }
                 playerBuild = build;
@@ -370,24 +373,24 @@ public class SmiteTeamGenerator {
 
     private Item getItem(String type) {
         Item item;
-        Boolean physical = type.toLowerCase().equals("physical");
-        item = ITEMS.get((int) (Math.random() * (ITEMS.size() - 1) + 1));
+        boolean physical = type.toLowerCase().equals("physical");
+        item = ITEMS.get((int) (Math.random() * (ITEMS.size())));
         if (physical) {
-            while (item.isMagical()) {
-                item = ITEMS.get((int) (Math.random() * (ITEMS.size() - 1) + 1));
+            while (item.isMagical() && !item.isPhysical()) {
+                item = ITEMS.get((int) (Math.random() * (ITEMS.size())));
             }
         } else {
-            while (item.isPhysical()) {
-                item = ITEMS.get((int) (Math.random() * (ITEMS.size() - 1) + 1));
+            while (item.isPhysical() && !item.isMagical()) {
+                item = ITEMS.get((int) (Math.random() * (ITEMS.size())));
             }
         }
         return item;
     }
 
     private God getGod(String position) {
-        God god = GODS.get((int)(Math.random() * (GODS.size())));
+        God god = GODS.get((int) (Math.random() * (GODS.size())));
         while (!god.getPosition().toLowerCase().equals(position.toLowerCase())) {
-            god = GODS.get((int)(Math.random() * (GODS.size())));
+            god = GODS.get((int) (Math.random() * (GODS.size())));
         }
         return god;
     }
