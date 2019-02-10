@@ -1,5 +1,5 @@
 # STG-Lib
-[![](https://jitpack.io/v/BaconatorNoVeg/STG-Lib.svg)](https://jitpack.io/#BaconatorNoVeg/STG-Lib)
+[![](https://jitpack.io/v/BaconatorNoVeg/STG-Lib.svg)](https://jitpack.io/#BaconatorNoVeg/STG-Lib) [![pipeline status](https://gitlab.com/BaconatorNoVeg/STG-Lib/badges/master/pipeline.svg)](https://gitlab.com/BaconatorNoVeg/STG-Lib/commits/master)
 
 A Java library that can be used to generate a random Smite team with random builds for the game Smite by Hi-Rez Studios.
 
