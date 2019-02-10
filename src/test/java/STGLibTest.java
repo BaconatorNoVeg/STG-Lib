@@ -18,7 +18,7 @@ public class STGLibTest {
     private ArrayList<String> items;
     private int godsInitialSize;
     private int itemsInitialSize;
-    private final int maxTests = 1000000;
+    private final int maxTests = 100000;
     private Player player;
 
     public STGLibTest() {
@@ -37,7 +37,6 @@ public class STGLibTest {
                 String[] values = currentLine.split(",");
                 gods.add(values[0]);
             }
-            System.out.println("Gods: " + gods.toString());
             in.close();
             godsInitialSize = gods.size();
             in = new Scanner(new File("Lists/items.csv"));
@@ -48,7 +47,6 @@ public class STGLibTest {
                 String[] values = currentLine.split(",");
                 items.add(values[0]);
             }
-            System.out.println("Items: " + items.toString());
             in.close();
             itemsInitialSize = items.size();
 
@@ -169,7 +167,6 @@ public class STGLibTest {
         stg.isForcingOffensive = true;
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
-            System.out.println(totalAttempts);
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
             ArrayList<String> build = player.getBuild();
             // Rangda's mask on assassins, hunters, or mages
@@ -189,7 +186,6 @@ public class STGLibTest {
         stg.isForcingDefensive = true;
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
-            System.out.println(totalAttempts);
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
             ArrayList<String> build = player.getBuild();
             // Rangda's mask on assassins, hunters, or mages
@@ -204,13 +200,31 @@ public class STGLibTest {
     }
 
     @Test
+    public void testForMultipleMasksOnBuild() {
+        int totalAttempts = 0;
+        for (int i = 0; i < maxTests; i++) {
+            totalAttempts++;
+            player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
+            ArrayList<String> build = player.getBuild();
+            int maskCount = 0;
+            for (String j : build) {
+                if (j.equals("Bumba's Mask") || j.equals("Lono's Mask") || j.equals("Rangda's Mask")) {
+                    maskCount++;
+                }
+            }
+            if (maskCount > 1) {
+                fail("There is more than one mask on a build.\nOffending build: " + player.toString());
+            }
+        }
+    }
+
+    @Test
     public void testForMasksOnWrongTypes() {
         int totalAttempts = 0;
         stg.isForcingOffensive = false;
         stg.isForcingDefensive = false;
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
-            System.out.println(totalAttempts);
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
             ArrayList<String> build = player.getBuild();
             // Rangda's mask on assassins, hunters, or mages
@@ -228,7 +242,8 @@ public class STGLibTest {
     public void getFullStyleBuildChances() {
         System.out.println("This test is designed to check the percent chance of full builds of a particular play style (Offense, Defense). This test is NOT going to fail.");
         System.out.println("Depending on the 'testMultFactor' value, this test can take anywhere from a few seconds to a few minutes. Just remember, the higher the value for that variable, the more accurate the results are going to be.");
-        int testMultFactor = 100;
+        int testMultFactor = 10;
+        System.out.println("'testMultFactor' value is " + testMultFactor);
         int totalAttempts = 0;
         int offensiveTotalOnDefensives = 0;
         int offensiveTotalOnOffensives = 0;

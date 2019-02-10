@@ -7,11 +7,9 @@ import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Logger;
 
 
 public class SmiteTeamGenerator {
-    private final Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private final ArrayList<Item> BOOTS = new ArrayList<>();
     private final ArrayList<God> GODS = new ArrayList<>();
@@ -42,7 +40,7 @@ public class SmiteTeamGenerator {
         InputStream itemsFile = null;
         boolean useLocal = local;
         if (!local) {
-            LOGGER.info("Attempting to fetch the current lists from Github...");
+            System.out.println("Attempting to fetch the current lists from Github...");
             try {
                 String bootsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/STG-Lib/master/Lists/boots.csv";
                 URL bootsUrl = new URL(bootsRemoteUrl);
@@ -55,13 +53,13 @@ public class SmiteTeamGenerator {
                 itemsFile = itemsUrl.openStream();
             } catch (Exception e) {
                 e.printStackTrace();
-                LOGGER.info("Failed to get the lists from GitHub. Falling back to compiled lists.");
+                System.out.println("Failed to get the lists from GitHub. Falling back to compiled lists.");
                 useLocal = true;
             }
         }
 
         if (local || useLocal) {
-            LOGGER.info("Using the compiled lists, these could be out of date...");
+            System.out.println("Using the compiled lists, these could be out of date...");
             try {
                 bootsFile = getClass().getResourceAsStream("/boots.csv");
                 godsFile = getClass().getResourceAsStream("/gods.csv");
@@ -100,8 +98,7 @@ public class SmiteTeamGenerator {
             ITEMS.add(new Item(values[0], values[1], values[2], values[3]));
         }
         in.close();
-        LOGGER.info(BOOTS.toString() + "\n" + GODS.toString() + "\n" + ITEMS.toString());
-        LOGGER.info("Smite Player Generator successfully loaded " + BOOTS.size() + " boots, " + GODS.size() + " gods, and " + ITEMS.size() + " items.");
+        System.out.println("STG-Lib successfully loaded " + BOOTS.size() + " boots, " + GODS.size() + " gods, and " + ITEMS.size() + " items.");
     }
 
     // Implementing Fisher–Yates shuffle
@@ -179,6 +176,8 @@ public class SmiteTeamGenerator {
                     }
                     if (buildItems.contains("Rangda's Mask")) {
                         build = generateBuild("mage", "magical", false);
+                    } else if (buildItems.contains("Lono's Mask") && buildItems.contains("Bumba's Mask")) {
+                        build = generateBuild("mage", "magical", false);
                     }
                     else if (isForcingOffensive) {
                             int offensiveCount = 0;
@@ -207,6 +206,8 @@ public class SmiteTeamGenerator {
                         buildItems.add(i.toString());
                     }
                     if (buildItems.contains("Lono's Mask")) {
+                        build = generateBuild("guardian", "magical", false);
+                    } else if (buildItems.contains("Rangda's Mask") && buildItems.contains("Bumba's Mask")) {
                         build = generateBuild("guardian", "magical", false);
                     }
                     else if (isForcingDefensive) {
@@ -239,6 +240,8 @@ public class SmiteTeamGenerator {
                     }
                     if (buildItems.contains("Lono's Mask")) {
                         build = generateBuild("warrior", "physical", false);
+                    } else if (buildItems.contains("Rangda's Mask") && buildItems.contains("Bumba's Mask")) {
+                        build = generateBuild("warrior", "physical", false);
                     }
                     else if (isForcingOffensive) {
                             int offensiveCount = 0;
@@ -267,6 +270,8 @@ public class SmiteTeamGenerator {
                         buildItems.add(i.toString());
                     }
                     if (buildItems.contains("Rangda's Mask")) {
+                        build = generateBuild("assassin", "physical", (player.getName().equals("Ratatoskr")));
+                    } else if (buildItems.contains("Lono's Mask") && buildItems.contains("Bumba's Mask")) {
                         build = generateBuild("assassin", "physical", (player.getName().equals("Ratatoskr")));
                     }
                     else if (isForcingOffensive) {
@@ -298,7 +303,10 @@ public class SmiteTeamGenerator {
                     int offensiveCount = 0;
                     if (buildItems.contains("Hastened Katana") || buildItems.contains("Stone Cutting Sword") || buildItems.contains("Masamune") || buildItems.contains("Golden Blade") || buildItems.contains("Rangda's Mask")) {
                         build = generateBuild("hunter", "physical", false);
-                    } else if (isForcingOffensive) {
+                    } else if (buildItems.contains("Lono's Mask") && buildItems.contains("Bumba's Mask")) {
+                        build = generateBuild("hunter", "physical", false);
+                    }
+                    else if (isForcingOffensive) {
                         for (Item i : build) {
                             if (i.isOffensive()) {
                                 offensiveCount++;
