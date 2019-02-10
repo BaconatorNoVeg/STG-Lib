@@ -22,6 +22,10 @@ public class Player {
         return buildList;
     }
 
+    public ArrayList<Item> getBuildAsItems() {
+        return build;
+    }
+
     public String toString() {
         return this.god + " - " + build.toString();
     }
