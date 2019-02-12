@@ -193,7 +193,8 @@ public class SmiteTeamGenerator {
         return new Player(player, playerBuild);
     }
 
-    private ArrayList<Item> processBuild(God god, ArrayList<Item> build) {
+    private ArrayList<Item> processBuild(God god, ArrayList<Item> oBuild) {
+        ArrayList<Item> build = oBuild;
         ArrayList<String> buildItems = new ArrayList<>();
         ArrayList<Item> playerBuild;
         while (true) {
@@ -329,7 +330,7 @@ public class SmiteTeamGenerator {
 
     private Item getItem(String type) {
         Item item;
-        boolean physical = type.toLowerCase().equals("physical");
+        boolean physical = type.equalsIgnoreCase("physical");
         item = ITEMS.get((int) (Math.random() * (ITEMS.size())));
         if (physical) {
             while (item.isMagical() && !item.isPhysical()) {
@@ -345,7 +346,7 @@ public class SmiteTeamGenerator {
 
     private God getGod(String position) {
         God god = GODS.get((int) (Math.random() * (GODS.size())));
-        while (!god.getPosition().toLowerCase().equals(position.toLowerCase())) {
+        while (!god.getPosition().equalsIgnoreCase(position)) {
             god = GODS.get((int) (Math.random() * (GODS.size())));
         }
         return god;

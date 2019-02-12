@@ -1,13 +1,12 @@
+package com.baconatornoveg.stglibtest;
+
 import com.baconatornoveg.stglib.Item;
 import com.baconatornoveg.stglib.Player;
 import com.baconatornoveg.stglib.SmiteTeamGenerator;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Scanner;
 
 import static junit.framework.TestCase.fail;
 
@@ -18,12 +17,11 @@ public class STGLibTest {
     private ArrayList<String> items;
     private int godsInitialSize;
     private int itemsInitialSize;
-    private final int maxTests = 100000;
+    private final int maxTests = 1000000;
     private Player player;
 
     public STGLibTest() {
         System.out.println("Running tests");
-        Scanner in;
         gods = new ArrayList<>();
         items = new ArrayList<>();
         stg = new SmiteTeamGenerator();
@@ -57,7 +55,7 @@ public class STGLibTest {
                 break;
             }
         }
-        if (!(gods.size() <= 0)) {
+        if (gods.size() > 0) {
             System.err.println("Failed to confirm all " + godsInitialSize + " gods being generated in " + maxTests + " total generations.");
             System.err.println("Leftover gods: " + gods.toString());
             fail();
@@ -85,14 +83,14 @@ public class STGLibTest {
             }
             Collections.sort(items);
             Collections.sort(testedItems);
-            if (items.size() == testedItems.size()) {
+            if ((items.size() == testedItems.size()) && items.equals(testedItems)) {
                 if (items.equals(testedItems)) {
                     break;
                 }
             }
         }
         missingItems.removeAll(testedItems);
-        if (!(itemsInitialSize == testedItems.size()) && !(missingItems.size() == 0)) {
+        if (itemsInitialSize != testedItems.size() && missingItems.size() != 0) {
             System.err.println("Failed to confirm all " + itemsInitialSize + " items being generated in " + maxTests + " total generations.");
             System.err.println(testedItems.size() + " items succeeded out of " + itemsInitialSize);
             System.err.println("Tested items: \n" + testedItems.toString());
@@ -196,11 +194,9 @@ public class STGLibTest {
 
     @Test
     public void testForMasksOnWrongTypes() {
-        int totalAttempts = 0;
         stg.isForcingOffensive = false;
         stg.isForcingDefensive = false;
         for (int i = 0; i < maxTests; i++) {
-            totalAttempts++;
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
             ArrayList<String> build = player.getBuild();
             // Rangda's mask on assassins, hunters, or mages
