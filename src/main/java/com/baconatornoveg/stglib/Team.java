@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class Team {
 
-    ArrayList<Player> team = new ArrayList<>();
-    SmiteTeamGenerator stg;
+    private ArrayList<Player> team = new ArrayList<>();
+    private SmiteTeamGenerator stg;
 
     public Team(SmiteTeamGenerator stg) {
         this.stg = stg;
