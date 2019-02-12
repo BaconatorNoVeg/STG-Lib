@@ -3,7 +3,7 @@
 
 A Java library that can be used to generate a random Smite team with random builds for the game Smite by Hi-Rez Studios.
 
-# Usage Examples
+## Usage Examples
 Create the Generator Object:
 ```java
 import com.baconatornoveg.stglib.*;
