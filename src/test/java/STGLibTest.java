@@ -26,39 +26,15 @@ public class STGLibTest {
         Scanner in;
         gods = new ArrayList<>();
         items = new ArrayList<>();
-
-        try {
-
-            in = new Scanner(new File("Lists/gods.csv"));
-            in.nextLine();
-
-            while(in.hasNextLine()) {
-                String currentLine = in.nextLine();
-                String[] values = currentLine.split(",");
-                gods.add(values[0]);
-            }
-            in.close();
-            godsInitialSize = gods.size();
-            in = new Scanner(new File("Lists/items.csv"));
-            in.nextLine();
-
-            while (in.hasNextLine()) {
-                String currentLine = in.nextLine();
-                String[] values = currentLine.split(",");
-                items.add(values[0]);
-            }
-            in.close();
-            itemsInitialSize = items.size();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
         stg = new SmiteTeamGenerator();
         stg.getLists(true);
+        gods = stg.getGodsAsStrings();
+        items = stg.getItemsAsStrings();
         stg.isForcingOffensive = false;
         stg.isForcingDefensive = false;
         stg.isForcingBalanced = false;
-
+        godsInitialSize = gods.size();
+        itemsInitialSize = gods.size();
     }
 
     @Test
