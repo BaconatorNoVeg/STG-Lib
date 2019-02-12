@@ -25,10 +25,6 @@ public class SmiteTeamGenerator {
         ASSASSIN, HUNTER, MAGE, WARRIOR, GUARDIAN
     }
 
-    public SmiteTeamGenerator() {
-        // Methods to be called on creation
-    }
-
     public String getVersion() {
         return "1.3.0";
     }
@@ -140,12 +136,10 @@ public class SmiteTeamGenerator {
                 for (int i = 0; i < size; i++) {
                     Player currentPlayer = team.getPlayer(i);
                     for (int j = 0; j < size; j++) {
-                        if (i != j) {
-                            if (currentPlayer.getGod().equals(team.getPlayer(j).getGod())) {
-                                dupes = true;
-                                team.set(j, makeLoadout(positions[(int) (Math.random() * (positions.length))]));
-                                break;
-                            }
+                        if ((i != j) && currentPlayer.getGod().equals(team.getPlayer(j).getGod())) {
+                            dupes = true;
+                            team.set(j, makeLoadout(positions[(int) (Math.random() * (positions.length))]));
+                            break;
                         }
                     }
                     if (dupes) {
@@ -162,182 +156,100 @@ public class SmiteTeamGenerator {
         God player = null;
         ArrayList<Item> playerBuild = null;
         ArrayList<Item> build;
-        ArrayList<String> buildItems = new ArrayList<>();
 
         switch (position) {
 
             case MAGE:
                 player = getGod("Mage");
-                build = generateBuild("mage", "magical", false);
-                while (true) {
-                    buildItems.clear();
-                    for (Item i : build) {
-                        buildItems.add(i.toString());
-                    }
-                    if (buildItems.contains("Rangda's Mask")) {
-                        build = generateBuild("mage", "magical", false);
-                    } else if (buildItems.contains("Lono's Mask") && buildItems.contains("Bumba's Mask")) {
-                        build = generateBuild("mage", "magical", false);
-                    }
-                    else if (isForcingOffensive) {
-                            int offensiveCount = 0;
-                            for (Item i : build) {
-                                if (i.isOffensive()) {
-                                    offensiveCount++;
-                                }
-                            }
-                            if (offensiveCount < 6) {
-                                build = generateBuild("mage", "magical", false);
-                            } else {
-                                break;
-                            }
-                    } else { break; }
-                }
-                playerBuild = build;
-                buildItems.clear();
+                build = generateBuild(player);
+                playerBuild = processBuild(player, build);
                 break;
 
             case GUARDIAN:
                 player = getGod("Guardian");
-                build = generateBuild("guardian", "magical", false);
-                while (true) {
-                    buildItems.clear();
-                    for (Item i : build) {
-                        buildItems.add(i.toString());
-                    }
-                    if (buildItems.contains("Lono's Mask")) {
-                        build = generateBuild("guardian", "magical", false);
-                    } else if (buildItems.contains("Rangda's Mask") && buildItems.contains("Bumba's Mask")) {
-                        build = generateBuild("guardian", "magical", false);
-                    }
-                    else if (isForcingDefensive) {
-                            int defensiveCount = 0;
-                            for (Item i : build) {
-                                if (i.isDefensive()) {
-                                    defensiveCount++;
-                                }
-                            }
-                            if (defensiveCount < 6) {
-                                build = generateBuild("guardian", "magical", false);
-                            } else {
-                                break;
-                            }
-                    } else {
-                        break;
-                    }
-                }
-                playerBuild = build;
-                buildItems.clear();
+                build = generateBuild(player);
+                playerBuild = processBuild(player, build);
                 break;
 
             case WARRIOR:
                 player = getGod("Warrior");
-                build = generateBuild("warrior", "physical", false);
-                while (true) {
-                    buildItems.clear();
-                    for (Item i : build) {
-                        buildItems.add(i.toString());
-                    }
-                    if (buildItems.contains("Lono's Mask")) {
-                        build = generateBuild("warrior", "physical", false);
-                    } else if (buildItems.contains("Rangda's Mask") && buildItems.contains("Bumba's Mask")) {
-                        build = generateBuild("warrior", "physical", false);
-                    }
-                    else if (isForcingOffensive) {
-                            int offensiveCount = 0;
-                            for (Item i : build) {
-                                if (i.isOffensive()) {
-                                    offensiveCount++;
-                                }
-                            }
-                            if (offensiveCount < 4) {
-                                build = generateBuild("warrior", "physical", false);
-                            } else {
-                                break;
-                            }
-                    } else { break; }
-                }
-                playerBuild = build;
-                buildItems.clear();
+                build = generateBuild(player);
+                playerBuild = processBuild(player, build);
                 break;
 
             case ASSASSIN:
                 player = getGod("Assassin");
-                build = generateBuild("assassin", "physical", (player.getName().equals("Ratatoskr")));
-                while (true) {
-                    buildItems.clear();
-                    for (Item i : build) {
-                        buildItems.add(i.toString());
-                    }
-                    if (buildItems.contains("Rangda's Mask")) {
-                        build = generateBuild("assassin", "physical", (player.getName().equals("Ratatoskr")));
-                    } else if (buildItems.contains("Lono's Mask") && buildItems.contains("Bumba's Mask")) {
-                        build = generateBuild("assassin", "physical", (player.getName().equals("Ratatoskr")));
-                    }
-                    else if (isForcingOffensive) {
-                            int offensiveCount = 0;
-                            for (Item i : build) {
-                                if (i.isOffensive()) {
-                                    offensiveCount++;
-                                }
-                            }
-                            if (offensiveCount < 6) {
-                                build = generateBuild("assassin", "physical", (player.getName().equals("Ratatoskr")));
-                            } else {
-                                break;
-                            }
-                    } else { break; }
-                }
-                playerBuild = build;
-                buildItems.clear();
+                build = generateBuild(player);
+                playerBuild = processBuild(player, build);
                 break;
 
             case HUNTER:
                 player = getGod("Hunter");
-                build = generateBuild("hunter", "physical", false);
-                while (true) {
-                    buildItems.clear();
-                    for (Item i : build) {
-                        buildItems.add(i.toString());
-                    }
-                    int offensiveCount = 0;
-                    if (buildItems.contains("Hastened Katana") || buildItems.contains("Stone Cutting Sword") || buildItems.contains("Masamune") || buildItems.contains("Golden Blade") || buildItems.contains("Rangda's Mask")) {
-                        build = generateBuild("hunter", "physical", false);
-                    } else if (buildItems.contains("Lono's Mask") && buildItems.contains("Bumba's Mask")) {
-                        build = generateBuild("hunter", "physical", false);
-                    }
-                    else if (isForcingOffensive) {
-                        for (Item i : build) {
-                            if (i.isOffensive()) {
-                                offensiveCount++;
-                            }
-                        }
-                        if (offensiveCount < 6) {
-                            build = generateBuild("hunter", "physical", false);
-                        } else {
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-                playerBuild = build;
-                buildItems.clear();
+                build = generateBuild(player);
+                playerBuild = processBuild(player, build);
                 break;
         }
 
         return new Player(player, playerBuild);
     }
 
-    private ArrayList<Item> generateBuild(String god, String type, boolean isRatatoskr) {
+    private ArrayList<Item> processBuild(God god, ArrayList<Item> build) {
+        ArrayList<String> buildItems = new ArrayList<>();
+        ArrayList<Item> playerBuild;
+        while (true) {
+            buildItems.clear();
+            for (Item i : build) {
+                buildItems.add(i.toString());
+            }
+            if (god.getPosition().equals("Hunter") && (buildItems.contains("Hastened Katana") || buildItems.contains("Stone Cutting Sword") || buildItems.contains("Masamune") || buildItems.contains("Golden Blade") || buildItems.contains("Rangda's Mask"))) {
+                build = generateBuild(god);
+            } else if ((god.getPosition().equals("Assassin") || god.getPosition().equals("Hunter") || god.getPosition().equals("Mage")) && (buildItems.contains("Rangda's Mask") || (buildItems.contains("Lono's Mask") && buildItems.contains("Bumba's Mask")))) {
+                build = generateBuild(god);
+            } else if ((god.getPosition().equals("Warrior") || god.getPosition().equals("Guardian")) && (buildItems.contains("Lono's Mask") || (buildItems.contains("Rangda's Mask") && buildItems.contains("Bumba's Mask")))) {
+                build = generateBuild(god);
+            } else if ((god.getPosition().equals("Assassin") || god.getPosition().equals("Hunter") || god.getPosition().equals("Mage")) && isForcingOffensive) {
+                int offensiveCount = 0;
+                for (Item i : build) {
+                    if (i.isOffensive()) {
+                        offensiveCount++;
+                    }
+                }
+                if (offensiveCount < 6) {
+                    build = generateBuild(god);
+                } else {
+                    break;
+                }
+            } else if ((god.getPosition().equals("Warrior") || god.getPosition().equals("Guardian")) && isForcingDefensive) {
+                int defensiveCount = 0;
+                for (Item i : build) {
+                    if (i.isDefensive()) {
+                        defensiveCount++;
+                    }
+                }
+                if ((god.getPosition().equals("Guardian") && defensiveCount < 6) || (god.getPosition().equals("Warrior") && defensiveCount < 5)) {
+                    build = generateBuild(god);
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        playerBuild = build;
+        buildItems.clear();
+        return playerBuild;
+    }
+
+    private ArrayList<Item> generateBuild(God god) {
         ArrayList<Item> build = new ArrayList<>();
         LinkedHashSet<Item> generation = new LinkedHashSet<>();
+        String type = god.getPosition();
         Item newItem;
-        if (type.equals("physical")) {
-            switch (god.toLowerCase()) {
+        if (type.equals("Assassin") || type.equals("Hunter") || type.equals("Warrior")) {
+            switch (type.toLowerCase()) {
                 case "assassin":
                 case "hunter":
-                    if (isRatatoskr) {
+                    if (god.getName().equals("Ratatoskr")) {
                         generation.add(new Item("Acorn of Yggdrasil", "true", "false", "OFFENSE"));
                     } else {
                         generation.add(getPhysicalBoot(isForcingOffensive));
@@ -359,7 +271,7 @@ public class SmiteTeamGenerator {
 
             build.addAll(0, generation);
         } else {
-            switch (god) {
+            switch (god.getPosition().toLowerCase()) {
                 case "mage":
                     generation.add(getMagicalBoot(isForcingOffensive, false));
                     break;
@@ -449,5 +361,21 @@ public class SmiteTeamGenerator {
 
     public ArrayList<God> getGODS() {
         return GODS;
+    }
+
+    public ArrayList<String> getGodsAsStrings() {
+        ArrayList<String> returnList = new ArrayList<>();
+        for (God i : GODS) {
+            returnList.add(i.getName());
+        }
+        return returnList;
+    }
+
+    public ArrayList<String> getItemsAsStrings() {
+        ArrayList<String> returnList = new ArrayList<>();
+        for (Item i : ITEMS) {
+            returnList.add(i.toString());
+        }
+        return returnList;
     }
 }
