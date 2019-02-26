@@ -7,14 +7,15 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static junit.framework.TestCase.fail;
 
 public class STGLibTest {
 
     private SmiteTeamGenerator stg;
-    private ArrayList<String> gods;
-    private ArrayList<String> items;
+    private List<String> gods;
+    private List<String> items;
     private int godsInitialSize;
     private int itemsInitialSize;
     private final int maxTests = 1000000;
@@ -68,12 +69,12 @@ public class STGLibTest {
     @Test
     public void testForAllItems() {
         int totalAttempts = 0;
-        ArrayList<String> testedItems = new ArrayList<>();
-        ArrayList<String> missingItems = items;
+        List<String> testedItems = new ArrayList<>();
+        List<String> missingItems = items;
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
-            ArrayList<String> build = player.getBuild();
+            List<String> build = player.getBuild();
             for (String item : items) {
                 for (String itm : build) {
                     if (itm.equals(item) && !testedItems.contains(item)) {
@@ -110,7 +111,7 @@ public class STGLibTest {
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.HUNTER);
-            ArrayList<String> build = player.getBuild();
+            List<String> build = player.getBuild();
             if (build.contains("Hastened Katana") || build.contains("Masamune") || build.contains("Stone Cutting Sword") || build.contains("Golden Blade")) {
                 System.err.println("A hunter build contains a forbidden hunter item.");
                 System.err.println("Build: " + player.toString());
@@ -126,7 +127,7 @@ public class STGLibTest {
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.HUNTER);
-            ArrayList<String> build = player.getBuild();
+            List<String> build = player.getBuild();
             if (build.contains("Hastened Katana") || build.contains("Masamune") || build.contains("Stone Cutting Sword") || build.contains("Golden Blade")) {
                 System.err.println("A hunter build contains a forbidden hunter item.");
                 System.err.println("Build: " + player.toString());
@@ -142,7 +143,7 @@ public class STGLibTest {
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
-            ArrayList<String> build = player.getBuild();
+            List<String> build = player.getBuild();
             // Rangda's mask on assassins, hunters, or mages
             if ((player.getGod().getPosition().equals("Assassin") || player.getGod().getPosition().equals("Hunter") || player.getGod().getPosition().equals("Mage")) && build.contains("Rangda's Mask")) {
                 fail("Rangda's mask is on a " + player.getGod().getPosition() + ".");
@@ -161,7 +162,7 @@ public class STGLibTest {
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
-            ArrayList<String> build = player.getBuild();
+            List<String> build = player.getBuild();
             // Rangda's mask on assassins, hunters, or mages
             if ((player.getGod().getPosition().equals("Assassin") || player.getGod().getPosition().equals("Hunter") || player.getGod().getPosition().equals("Mage")) && build.contains("Rangda's Mask")) {
                 fail("Rangda's mask is on a " + player.getGod().getPosition() + ".");
@@ -179,7 +180,7 @@ public class STGLibTest {
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
-            ArrayList<String> build = player.getBuild();
+            List<String> build = player.getBuild();
             int maskCount = 0;
             for (String j : build) {
                 if (j.equals("Bumba's Mask") || j.equals("Lono's Mask") || j.equals("Rangda's Mask")) {
@@ -198,7 +199,7 @@ public class STGLibTest {
         stg.isForcingDefensive = false;
         for (int i = 0; i < maxTests; i++) {
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
-            ArrayList<String> build = player.getBuild();
+            List<String> build = player.getBuild();
             // Rangda's mask on assassins, hunters, or mages
             if ((player.getGod().getPosition().equals("Assassin") || player.getGod().getPosition().equals("Hunter") || player.getGod().getPosition().equals("Mage")) && build.contains("Rangda's Mask")) {
                 fail("Rangda's mask is on a " + player.getGod().getPosition() + ".");
@@ -211,10 +212,10 @@ public class STGLibTest {
     }
 
     @Test
-    public void getFullStyleBuildChances() {
-        System.out.println("This test is designed to check the percent chance of full builds of a particular play style (Offense, Defense). This test is NOT going to fail.");
+    public void getGeneratorStatistics() {
+        System.out.println("This test is designed to check the percent chance of full builds of a particular play style (Offense, Defense). It will also calculate how fast the generator is on your system. This test will NOT fail.");
         System.out.println("Depending on the 'testMultFactor' value, this test can take anywhere from a few seconds to a few minutes. Just remember, the higher the value for that variable, the more accurate the results are going to be.");
-        int testMultFactor = 10;
+        int testMultFactor = 1;
         System.out.println("'testMultFactor' value is " + testMultFactor);
         int totalAttempts = 0;
         int offensiveTotalOnDefensives = 0;
@@ -223,6 +224,9 @@ public class STGLibTest {
         int defensiveTotalOnOffensives = 0;
         stg.isForcingOffensive = false;
         stg.isForcingDefensive = false;
+        // Time values for speed calculation
+        long startTime = System.nanoTime();
+        List<Long> times = new ArrayList<>();
         for (int i = 0; i < maxTests*testMultFactor; i++) {
             totalAttempts++;
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
@@ -252,13 +256,33 @@ public class STGLibTest {
                     defensiveTotalOnOffensives++;
                 }
             }
+            if (totalAttempts%10000 == 0) {
+                long currentTime = System.nanoTime();
+                long timeElapsed = (currentTime - startTime)/1000000;
+                System.out.println("Generated " + totalAttempts + "/" + testMultFactor*maxTests + " builds. Test is " + ((float)totalAttempts/((float)testMultFactor*maxTests))*100 + "% complete. Time elapsed: " + timeElapsed + "ms");
+                times.add(timeElapsed);
+                startTime = System.nanoTime();
+            }
         }
+
+        // Time calculations
+        double avgTime = 0;
+        for (Long time : times) {
+            avgTime += time;
+        }
+        avgTime /= times.size();
+        double secondsPerInterval = avgTime/1000;
+        double bps = 10000/secondsPerInterval;
+
+        System.out.println();
         System.out.println("Full Offensive Builds on Offensive Gods Count: " + offensiveTotalOnOffensives + " | Percent Chance: " + (((float)offensiveTotalOnOffensives/(float)totalAttempts) * 100) + "%");
         System.out.println("Full Offensive Builds on Defensive Gods Count: " + offensiveTotalOnDefensives + " | Percent Chance: " + (((float)offensiveTotalOnDefensives/(float)totalAttempts) * 100) + "%");
         System.out.println("Full Defensive Builds on Offensive Gods Count: " + defensiveTotalOnOffensives + " | Percent Chance: " + (((float)defensiveTotalOnOffensives/(float)totalAttempts) * 100) + "%");
         System.out.println("Full Defensive Builds on Defensive Gods Count: " + defensiveTotalOnDefensives + " | Percent Chance: " + (((float)defensiveTotalOnDefensives/(float)totalAttempts) * 100) + "%");
         System.out.println();
         System.out.println("Statistics calculated out of the total " + totalAttempts + " build generations for this particular test.");
+        System.out.println("Average time elapsed per 10000 builds: " + avgTime + "ms");
+        System.out.println("Calculated builds per second: " + bps + " b/s");
     }
 
 }
