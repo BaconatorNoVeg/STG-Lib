@@ -1,13 +1,14 @@
 package com.baconatornoveg.stglib;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Player {
 
     private God god;
-    private ArrayList<Item> build;
+    private List<Item> build;
 
-    public Player(God god, ArrayList<Item> build) {
+    public Player(God god, List<Item> build) {
         this.god = god;
         this.build = build;
     }
@@ -16,13 +17,15 @@ public class Player {
         return this.god;
     }
 
-    public ArrayList<String> getBuild() {
-        ArrayList<String> buildList = new ArrayList<>();
-        for (Item aBuild : build) buildList.add(aBuild.toString());
+    public List<String> getBuild() {
+        List<String> buildList = new ArrayList<>();
+        for (Item aBuild : build) {
+            buildList.add(aBuild.toString());
+        }
         return buildList;
     }
 
-    public ArrayList<Item> getBuildAsItems() {
+    public List<Item> getBuildAsItems() {
         return build;
     }
 

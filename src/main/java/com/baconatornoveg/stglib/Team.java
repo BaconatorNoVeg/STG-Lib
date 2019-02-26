@@ -1,10 +1,11 @@
 package com.baconatornoveg.stglib;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Team {
 
-    private ArrayList<Player> team = new ArrayList<>();
+    private List<Player> team = new ArrayList<>();
     private SmiteTeamGenerator stg;
 
     public Team(SmiteTeamGenerator stg) {
@@ -15,8 +16,8 @@ public class Team {
         team.add(player);
     }
 
-    public ArrayList<String> getGods() {
-        ArrayList<String> gods = new ArrayList<>();
+    public List<String> getGods() {
+        List<String> gods = new ArrayList<>();
         for (Player i : team) {
             gods.add(i.getGod().getName());
         }
@@ -58,7 +59,7 @@ public class Team {
             }
             set(index, rerollingPlayer);
         } else {
-            ArrayList<String> takenPositions = new ArrayList<>();
+            List<String> takenPositions = new ArrayList<>();
             for (Player i : team) {
                 takenPositions.add(i.getGod().getPosition());
             }
@@ -80,14 +81,14 @@ public class Team {
     }
 
     public String toString() {
-        String returnString = "";
+        StringBuilder returnString = new StringBuilder();
 
-        returnString += "Generated Team: \n";
-        for (int i = 0; i < team.size(); i++) {
-            returnString += team.get(i).getGod() + " - " + team.get(i).getBuild() + "\n";
+        returnString.append("Generated Team: \n");
+        for (Player player : team) {
+            returnString.append(player.getGod()).append(" - ").append(player.getBuild()).append("\n");
         }
 
-        return returnString;
+        return returnString.toString();
     }
 
 }

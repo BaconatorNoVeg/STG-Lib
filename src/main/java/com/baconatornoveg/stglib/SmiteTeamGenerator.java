@@ -2,18 +2,15 @@ package com.baconatornoveg.stglib;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 
 public class SmiteTeamGenerator {
 
-    private final ArrayList<Item> BOOTS = new ArrayList<>();
-    private final ArrayList<God> GODS = new ArrayList<>();
-    private final ArrayList<Item> ITEMS = new ArrayList<>();
+    private final List<Item> BOOTS = new ArrayList<>();
+    private final List<God> GODS = new ArrayList<>();
+    private final List<Item> ITEMS = new ArrayList<>();
 
     public boolean isForcingOffensive = false;
     public boolean isForcingDefensive = false;
@@ -154,8 +151,8 @@ public class SmiteTeamGenerator {
 
     public Player makeLoadout(Positions position) {
         God player = null;
-        ArrayList<Item> playerBuild = null;
-        ArrayList<Item> build;
+        List<Item> playerBuild = null;
+        List<Item> build;
 
         switch (position) {
 
@@ -188,15 +185,18 @@ public class SmiteTeamGenerator {
                 build = generateBuild(player);
                 playerBuild = processBuild(player, build);
                 break;
+
+            default:
+                break;
         }
 
         return new Player(player, playerBuild);
     }
 
-    private ArrayList<Item> processBuild(God god, ArrayList<Item> oBuild) {
-        ArrayList<Item> build = oBuild;
-        ArrayList<String> buildItems = new ArrayList<>();
-        ArrayList<Item> playerBuild;
+    private List<Item> processBuild(God god, List<Item> oBuild) {
+        List<Item> build = oBuild;
+        List<String> buildItems = new ArrayList<>();
+        List<Item> playerBuild;
         while (true) {
             buildItems.clear();
             for (Item i : build) {
@@ -241,8 +241,8 @@ public class SmiteTeamGenerator {
         return playerBuild;
     }
 
-    private ArrayList<Item> generateBuild(God god) {
-        ArrayList<Item> build = new ArrayList<>();
+    private List<Item> generateBuild(God god) {
+        List<Item> build = new ArrayList<>();
         LinkedHashSet<Item> generation = new LinkedHashSet<>();
         String type = god.getPosition();
         Item newItem;
@@ -352,28 +352,28 @@ public class SmiteTeamGenerator {
         return god;
     }
 
-    public ArrayList<Item> getBOOTS() {
+    public List<Item> getBOOTS() {
         return BOOTS;
     }
 
-    public ArrayList<Item> getITEMS() {
+    public List<Item> getITEMS() {
         return ITEMS;
     }
 
-    public ArrayList<God> getGODS() {
+    public List<God> getGODS() {
         return GODS;
     }
 
-    public ArrayList<String> getGodsAsStrings() {
-        ArrayList<String> returnList = new ArrayList<>();
+    public List<String> getGodsAsStrings() {
+        List<String> returnList = new ArrayList<>();
         for (God i : GODS) {
             returnList.add(i.getName());
         }
         return returnList;
     }
 
-    public ArrayList<String> getItemsAsStrings() {
-        ArrayList<String> returnList = new ArrayList<>();
+    public List<String> getItemsAsStrings() {
+        List<String> returnList = new ArrayList<>();
         for (Item i : ITEMS) {
             returnList.add(i.toString());
         }
