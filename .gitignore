@@ -67,3 +67,5 @@ fabric.properties
 
 .gradle/
 build/
+
+.idea/inspectionProfiles
