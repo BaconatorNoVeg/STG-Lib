@@ -161,7 +161,7 @@ public class STGLibTest {
     public void getGeneratorStatistics() {
         System.out.println("This test is designed to check the percent chance of full builds of a particular play style (Offense, Defense). It will also calculate how fast the generator is on your system. This test will NOT fail.");
         System.out.println("Depending on the 'testMultFactor' value, this test can take anywhere from a few seconds to a few minutes. Just remember, the higher the value for that variable, the more accurate the results are going to be.");
-        int testMultFactor = 1;
+        int testMultFactor = 55;
         System.out.println("'testMultFactor' value is " + testMultFactor);
         int totalAttempts = 0;
         int offensiveTotalOnDefensives = 0;
