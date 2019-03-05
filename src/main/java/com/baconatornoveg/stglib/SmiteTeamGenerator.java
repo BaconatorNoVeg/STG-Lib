@@ -15,6 +15,7 @@ public class SmiteTeamGenerator {
     public boolean isForcingOffensive = false;
     public boolean isForcingDefensive = false;
     public boolean isForcingBalanced = false;
+    public boolean isForcingBoots = true;
 
     private Random rand = new Random();
 
@@ -107,10 +108,11 @@ public class SmiteTeamGenerator {
         }
     }
 
-    public Team generateTeam(int size, boolean forceOffensive, boolean forceDefensive, boolean forceBalanced) {
+    public Team generateTeam(int size, boolean forceOffensive, boolean forceDefensive, boolean forceBalanced, boolean forceBoots) {
         isForcingOffensive = forceOffensive;
         isForcingDefensive = forceDefensive;
         isForcingBalanced = forceBalanced;
+        isForcingBoots = forceBoots;
         Team team = new Team(this);
         Positions[] positions = Positions.values();
         if (forceBalanced) {
@@ -253,11 +255,19 @@ public class SmiteTeamGenerator {
                     if (god.getName().equals("Ratatoskr")) {
                         generation.add(new Item("Acorn of Yggdrasil", "true", "false", "OFFENSE"));
                     } else {
-                        generation.add(getPhysicalBoot(isForcingOffensive));
+                        if ((int)(Math.random() * 100) > 35  && !isForcingBoots) {
+                            generation.add(getItem("physical"));
+                        } else {
+                            generation.add(getPhysicalBoot(isForcingOffensive));
+                        }
                     }
                     break;
                 case "warrior":
-                    generation.add(getPhysicalBoot(false));
+                    if ((int)(Math.random() * 100) > 35 && !isForcingBoots) {
+                        generation.add(getItem("physical"));
+                    } else {
+                        generation.add(getPhysicalBoot(false));
+                    }
                     break;
             }
             for (int i = 0; i < 5; i++) {
@@ -274,10 +284,18 @@ public class SmiteTeamGenerator {
         } else {
             switch (god.getPosition().toLowerCase()) {
                 case "mage":
-                    generation.add(getMagicalBoot(isForcingOffensive, false));
+                    if ((int)(Math.random() * 100) > 35 && !isForcingBoots) {
+                        generation.add(getItem("magical"));
+                    } else {
+                        generation.add(getMagicalBoot(isForcingOffensive, false));
+                    }
                     break;
                 case "guardian":
-                    generation.add(getMagicalBoot(false, isForcingDefensive));
+                    if ((int)(Math.random() * 100) > 35 && !isForcingBoots) {
+                        generation.add(getItem("magical"));
+                    } else {
+                        generation.add(getMagicalBoot(false, isForcingDefensive));
+                    }
                     break;
             }
             for (int i = 0; i < 5; i++) {
