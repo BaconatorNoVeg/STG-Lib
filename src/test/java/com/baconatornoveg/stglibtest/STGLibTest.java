@@ -105,22 +105,6 @@ public class STGLibTest {
     }
 
     @Test
-    public void testForKatanasOnHuntersForceOffensive() {
-        int totalAttempts = 0;
-        stg.isForcingOffensive = true;
-        for (int i = 0; i < maxTests; i++) {
-            totalAttempts++;
-            player = stg.makeLoadout(SmiteTeamGenerator.Positions.HUNTER);
-            List<String> build = player.getBuild();
-            if (build.contains("Hastened Katana") || build.contains("Masamune") || build.contains("Stone Cutting Sword") || build.contains("Golden Blade")) {
-                System.err.println("A hunter build contains a forbidden hunter item.");
-                System.err.println("Build: " + player.toString());
-                fail("A hunter build contains a forbidden hunter item.");
-            }
-        }
-    }
-
-    @Test
     public void testForKatanasOnHunters() {
         int totalAttempts = 0;
         stg.isForcingOffensive = false;
@@ -132,44 +116,6 @@ public class STGLibTest {
                 System.err.println("A hunter build contains a forbidden hunter item.");
                 System.err.println("Build: " + player.toString());
                 fail("A hunter build contains a forbidden hunter item.");
-            }
-        }
-    }
-
-    @Test
-    public void testForMasksOnWrongTypesForceOffensive() {
-        int totalAttempts = 0;
-        stg.isForcingOffensive = true;
-        for (int i = 0; i < maxTests; i++) {
-            totalAttempts++;
-            player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
-            List<String> build = player.getBuild();
-            // Rangda's mask on assassins, hunters, or mages
-            if ((player.getGod().getPosition().equals("Assassin") || player.getGod().getPosition().equals("Hunter") || player.getGod().getPosition().equals("Mage")) && build.contains("Rangda's Mask")) {
-                fail("Rangda's mask is on a " + player.getGod().getPosition() + ".");
-            }
-            // Lono's mask on warriors or guardians
-            else if ((player.getGod().getPosition().equals("Warrior") || player.getGod().getPosition().equals("Guardian")) && build.contains("Lono's Mask")) {
-                fail("Lono's mask is on a " + player.getGod().getPosition() + ".");
-            }
-        }
-    }
-
-    @Test
-    public void testForMasksOnWrongTypesForceDefensive() {
-        int totalAttempts = 0;
-        stg.isForcingDefensive = true;
-        for (int i = 0; i < maxTests; i++) {
-            totalAttempts++;
-            player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
-            List<String> build = player.getBuild();
-            // Rangda's mask on assassins, hunters, or mages
-            if ((player.getGod().getPosition().equals("Assassin") || player.getGod().getPosition().equals("Hunter") || player.getGod().getPosition().equals("Mage")) && build.contains("Rangda's Mask")) {
-                fail("Rangda's mask is on a " + player.getGod().getPosition() + ".");
-            }
-            // Lono's mask on warriors or guardians
-            else if ((player.getGod().getPosition().equals("Warrior") || player.getGod().getPosition().equals("Guardian")) && build.contains("Lono's Mask")) {
-                fail("Lono's mask is on a " + player.getGod().getPosition() + ".");
             }
         }
     }
