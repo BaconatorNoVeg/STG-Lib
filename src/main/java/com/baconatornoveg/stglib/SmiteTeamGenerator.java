@@ -397,4 +397,12 @@ public class SmiteTeamGenerator {
         }
         return returnList;
     }
+
+    public List<String> getBootsAsStrings() {
+        List<String> returnList = new ArrayList<>();
+        for (Item i : BOOTS) {
+            returnList.add(i.toString());
+        }
+        return returnList;
+    }
 }

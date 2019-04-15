@@ -16,6 +16,7 @@ public class STGLibTest {
     private SmiteTeamGenerator stg;
     private List<String> gods;
     private List<String> items;
+    private List<String> boots;
     private int godsInitialSize;
     private int itemsInitialSize;
     private final int maxTests = 1000000;
@@ -29,6 +30,7 @@ public class STGLibTest {
         stg.getLists(true);
         gods = stg.getGodsAsStrings();
         items = stg.getItemsAsStrings();
+        boots = stg.getBootsAsStrings();
         stg.isForcingOffensive = false;
         stg.isForcingDefensive = false;
         stg.isForcingBalanced = false;
@@ -229,6 +231,30 @@ public class STGLibTest {
         System.out.println("Statistics calculated out of the total " + totalAttempts + " build generations for this particular test.");
         System.out.println("Average time elapsed per 10000 builds: " + avgTime + "ms");
         System.out.println("Calculated builds per second: " + bps + " b/s");
+    }
+
+    @Test
+    public void testForNotAlwaysBoots() {
+        stg.isForcingBoots = false;
+        boots.add("Acorn of Yggdrasil");
+        boolean noBoots = false;
+        int totalNoBoots = 0;
+        for (int i = 0; i < maxTests; i++) {
+            player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
+            List<String> build = player.getBuild();
+            if (Collections.disjoint(build, boots)) {
+                noBoots = true;
+                totalNoBoots++;
+            }
+        }
+        if (!noBoots) {
+            fail("Out of the " + maxTests + " tests and with isForcingBoots false, there were never cases of there not being boots. Check the generation algorithm.");
+        } else if (totalNoBoots == maxTests) {
+            fail("All of the builds were builds without boots. It should not be like this. Check the generation algorithm.");
+        } else {
+            System.out.println("With isForcingBoots false, there are not always boots in the builds.");
+            System.out.println("Out of the " + maxTests + " tests, there were " + totalNoBoots + " builds without boots.");
+        }
     }
 
 }
