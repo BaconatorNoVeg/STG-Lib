@@ -17,6 +17,10 @@ public class SmiteTeamGenerator {
     public boolean isForcingBalanced = false;
     public boolean isForcingBoots = true;
 
+    // Sets what kind of build style to generate on all players
+    // 0: default random | 1: attack | 2: defense | 3: half-and-half
+    public int buildType = 0;
+
     private Random rand = new Random();
 
     public enum Positions {
