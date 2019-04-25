@@ -31,11 +31,10 @@ public class STGLibTest {
         gods = stg.getGodsAsStrings();
         items = stg.getItemsAsStrings();
         boots = stg.getBootsAsStrings();
-        stg.isForcingOffensive = false;
-        stg.isForcingDefensive = false;
+        stg.buildType = 0;
         stg.isForcingBalanced = false;
         godsInitialSize = gods.size();
-        itemsInitialSize = gods.size();
+        itemsInitialSize = items.size();
     }
 
     @Test
@@ -73,6 +72,10 @@ public class STGLibTest {
         int totalAttempts = 0;
         List<String> testedItems = new ArrayList<>();
         List<String> missingItems = items;
+        for (String i : boots) {
+            missingItems.add(i);
+        }
+        missingItems.add("Acorn of Yggdrasil");
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
@@ -94,13 +97,13 @@ public class STGLibTest {
         }
         missingItems.removeAll(testedItems);
         if (itemsInitialSize != testedItems.size() && missingItems.size() != 0) {
-            System.err.println("Failed to confirm all " + itemsInitialSize + " items being generated in " + maxTests + " total generations.");
+            System.err.println("Failed to confirm all " + itemsInitialSize + boots.size() + " items being generated in " + maxTests + " total generations.");
             System.err.println(testedItems.size() + " items succeeded out of " + itemsInitialSize);
             System.err.println("Tested items: \n" + testedItems.toString());
             System.err.println("Missing items: \n" + missingItems.toString());
             fail();
         } else {
-            System.out.println("Successfully confirmed all " + itemsInitialSize + " items being generated in " + totalAttempts + " generations.");
+            System.out.println("Successfully confirmed all " + (itemsInitialSize + boots.size()) + " items being generated in " + totalAttempts + " generations.");
             System.out.println("Tested items: \n" + testedItems.toString());
             System.out.println("Missing items: \n" + missingItems.toString());
         }
@@ -109,7 +112,7 @@ public class STGLibTest {
     @Test
     public void testForKatanasOnHunters() {
         int totalAttempts = 0;
-        stg.isForcingOffensive = false;
+        stg.buildType = 0;
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.HUNTER);
@@ -143,8 +146,7 @@ public class STGLibTest {
 
     @Test
     public void testForMasksOnWrongTypes() {
-        stg.isForcingOffensive = false;
-        stg.isForcingDefensive = false;
+        stg.buildType = 0;
         for (int i = 0; i < maxTests; i++) {
             player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
             List<String> build = player.getBuild();
@@ -170,8 +172,7 @@ public class STGLibTest {
         int offensiveTotalOnOffensives = 0;
         int defensiveTotalOnDefensives = 0;
         int defensiveTotalOnOffensives = 0;
-        stg.isForcingOffensive = false;
-        stg.isForcingDefensive = false;
+        stg.buildType = 0;
         // Time values for speed calculation
         long startTime = System.nanoTime();
         List<Long> times = new ArrayList<>();
@@ -185,7 +186,10 @@ public class STGLibTest {
             int offensiveItems = 0;
             int defensiveItems = 0;
             for (Item j : player.getBuildAsItems()) {
-                if (j.isOffensive()) {
+                if (j.isOffensive() && j.isDefensive()) {
+                    offensiveItems++;
+                    defensiveItems++;
+                } else if (j.isOffensive()) {
                     offensiveItems++;
                 } else if (j.isDefensive()) {
                     defensiveItems++;

@@ -12,13 +12,12 @@ public class SmiteTeamGenerator {
     private final List<God> GODS = new ArrayList<>();
     private final List<Item> ITEMS = new ArrayList<>();
 
-    public boolean isForcingOffensive = false;
-    public boolean isForcingDefensive = false;
     public boolean isForcingBalanced = false;
     public boolean isForcingBoots = true;
+    public boolean warriorsOffensive = true;
 
     // Sets what kind of build style to generate on all players
-    // 0: default random | 1: attack | 2: defense | 3: half-and-half
+    // 0: default random | 1: attack | 2: defense | 3: half-and-half | 4: Offensive on offensive and defensive on defensive
     public int buildType = 0;
 
     private Random rand = new Random();
@@ -112,11 +111,10 @@ public class SmiteTeamGenerator {
         }
     }
 
-    public Team generateTeam(int size, boolean forceOffensive, boolean forceDefensive, boolean forceBalanced, boolean forceBoots) {
-        isForcingOffensive = forceOffensive;
-        isForcingDefensive = forceDefensive;
+    public Team generateTeam(int size, boolean forceBalanced, boolean forceBoots, int buildType) {
         isForcingBalanced = forceBalanced;
         isForcingBoots = forceBoots;
+        this.buildType = buildType;
         Team team = new Team(this);
         Positions[] positions = Positions.values();
         if (forceBalanced) {
@@ -214,11 +212,55 @@ public class SmiteTeamGenerator {
                 build = generateBuild(god);
             } else if ((god.getPosition().equals("Warrior") || god.getPosition().equals("Guardian")) && (buildItems.contains("Lono's Mask") || (buildItems.contains("Rangda's Mask") && buildItems.contains("Bumba's Mask")))) {
                 build = generateBuild(god);
-            } else if ((god.getPosition().equals("Assassin") || god.getPosition().equals("Hunter") || god.getPosition().equals("Mage")) && isForcingOffensive) {
+            } else {
+                boolean buildReady = false;
                 int offensiveCount = 0;
+                int defensiveCount = 0;
+                for (Item i : build) {
+                    if (i.isOffensive() && i.isDefensive()) {
+                        offensiveCount++;
+                        defensiveCount++;
+                    }
+                    else if (i.isOffensive()) offensiveCount++; else if (i.isDefensive()) defensiveCount++;
+                }
+                switch (buildType) {
+                    default:
+                    case 0:
+                        // Default random
+                        buildReady = true;
+                        break;
+                    case 1:
+                        // Full offensive
+                        if (offensiveCount < 6) build = generateBuild(god); else buildReady = true;
+                        break;
+                    case 2:
+                        // Full defensive
+                        if (defensiveCount < 6) build = generateBuild(god); else buildReady = true;
+                        break;
+                    case 3:
+                        // Half-and-half
+                        if (offensiveCount < 3 || defensiveCount < 3) build = generateBuild(god); else buildReady = true;
+                        break;
+                    case 4:
+                        // Equivalent to isForcingOffensive and isForcingDefensive both true
+                        if ("Assassin".equalsIgnoreCase(god.getPosition()) || "Hunter".equalsIgnoreCase(god.getPosition()) || "Mage".equalsIgnoreCase(god.getPosition()) || ("Warrior".equalsIgnoreCase(god.getPosition()) && warriorsOffensive)) {
+                            if (offensiveCount < 6) build = generateBuild(god); else buildReady = true;
+                        } else {
+                            if (defensiveCount < 6) build = generateBuild(god); else buildReady = true;
+                        }
+                        break;
+                }
+                if (buildReady) break;
+            }
+
+            /* else if ((god.getPosition().equals("Assassin") || god.getPosition().equals("Hunter") || god.getPosition().equals("Mage")) && isForcingOffensive) {
+                int offensiveCount = 0;
+                int defensiveCount = 0;
                 for (Item i : build) {
                     if (i.isOffensive()) {
                         offensiveCount++;
+                    } else if (i.isDefensive()) {
+                        defensiveCount++;
                     }
                 }
                 if (offensiveCount < 6) {
@@ -240,7 +282,7 @@ public class SmiteTeamGenerator {
                 }
             } else {
                 break;
-            }
+            }*/
         }
         playerBuild = build;
         buildItems.clear();
@@ -257,12 +299,12 @@ public class SmiteTeamGenerator {
                 case "assassin":
                 case "hunter":
                     if (god.getName().equals("Ratatoskr")) {
-                        generation.add(new Item("Acorn of Yggdrasil", "true", "false", "OFFENSE"));
+                        generation.add(new Item("Acorn of Yggdrasil", "true", "false", "BOTH"));
                     } else {
                         if ((int)(Math.random() * 100) > 35  && !isForcingBoots) {
                             generation.add(getItem("physical"));
                         } else {
-                            generation.add(getPhysicalBoot(isForcingOffensive));
+                            generation.add(getBoot(god));
                         }
                     }
                     break;
@@ -270,7 +312,7 @@ public class SmiteTeamGenerator {
                     if ((int)(Math.random() * 100) > 35 && !isForcingBoots) {
                         generation.add(getItem("physical"));
                     } else {
-                        generation.add(getPhysicalBoot(false));
+                        generation.add(getBoot(god));
                     }
                     break;
             }
@@ -291,14 +333,14 @@ public class SmiteTeamGenerator {
                     if ((int)(Math.random() * 100) > 35 && !isForcingBoots) {
                         generation.add(getItem("magical"));
                     } else {
-                        generation.add(getMagicalBoot(isForcingOffensive, false));
+                        generation.add(getBoot(god));
                     }
                     break;
                 case "guardian":
                     if ((int)(Math.random() * 100) > 35 && !isForcingBoots) {
                         generation.add(getItem("magical"));
                     } else {
-                        generation.add(getMagicalBoot(false, isForcingDefensive));
+                        generation.add(getBoot(god));
                     }
                     break;
             }
@@ -314,6 +356,21 @@ public class SmiteTeamGenerator {
             build.addAll(0, generation);
         }
         return build;
+    }
+
+    private Item getBoot(God god) {
+        Item boot;
+        boot = BOOTS.get((int)(Math.random() * BOOTS.size()));
+        if (god.isPhysical()) {
+            while (boot.isMagical()) {
+                boot = BOOTS.get((int)(Math.random() * BOOTS.size()));
+            }
+        } else {
+            while (boot.isPhysical()) {
+                boot = BOOTS.get((int)(Math.random() * BOOTS.size()));
+            }
+        }
+        return boot;
     }
 
     private Item getPhysicalBoot(boolean isOffensive) {
