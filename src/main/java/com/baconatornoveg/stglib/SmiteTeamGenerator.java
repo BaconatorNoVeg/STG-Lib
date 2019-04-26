@@ -11,6 +11,7 @@ public class SmiteTeamGenerator {
     private final List<Item> BOOTS = new ArrayList<>();
     private final List<God> GODS = new ArrayList<>();
     private final List<Item> ITEMS = new ArrayList<>();
+    private final List<Item> RELICS = new ArrayList<>();
 
     public boolean isForcingBalanced = false;
     public boolean isForcingBoots = true;
@@ -35,6 +36,7 @@ public class SmiteTeamGenerator {
         InputStream bootsFile = null;
         InputStream godsFile = null;
         InputStream itemsFile = null;
+        InputStream relicsFile = null;
         boolean useLocal = local;
         if (!local) {
             System.out.println("Attempting to fetch the current lists from Github...");
@@ -45,6 +47,8 @@ public class SmiteTeamGenerator {
                 URL godsUrl = new URL(godsRemoteUrl);
                 String itemsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/STG-Lib/master/Lists/items.csv";
                 URL itemsUrl = new URL(itemsRemoteUrl);
+                String relicsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/STG-Lib/master/Lists/relics.csv";
+                URL relicsUrl = new URL(relicsRemoteUrl);
                 bootsFile = bootsUrl.openStream();
                 godsFile = godsUrl.openStream();
                 itemsFile = itemsUrl.openStream();
@@ -61,6 +65,7 @@ public class SmiteTeamGenerator {
                 bootsFile = getClass().getResourceAsStream("/boots.csv");
                 godsFile = getClass().getResourceAsStream("/gods.csv");
                 itemsFile = getClass().getResourceAsStream("/items.csv");
+                relicsFile = getClass().getResourceAsStream("/relics.csv");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -95,7 +100,16 @@ public class SmiteTeamGenerator {
             ITEMS.add(new Item(values[0], values[1], values[2], values[3]));
         }
         in.close();
-        System.out.println("STG-Lib successfully loaded " + BOOTS.size() + " boots, " + GODS.size() + " gods, and " + ITEMS.size() + " items.");
+
+        in = new Scanner(relicsFile);
+        in.nextLine();
+        while (in.hasNextLine()) {
+            String line = in.nextLine();
+            String[] values = line.split(",");
+            RELICS.add(new Item(values[0], "TRUE", "TRUE", "Relic"));
+        }
+        in.close();
+        System.out.println("STG-Lib successfully loaded " + BOOTS.size() + " boots, " + GODS.size() + " gods, " + RELICS.size() + " relics, and " + ITEMS.size() + " items.");
     }
 
     // Implementing Fisher–Yates shuffle
