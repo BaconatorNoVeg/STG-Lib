@@ -38,6 +38,15 @@ public class STGLibTest {
     }
 
     @Test
+    public void buildPrintOuts() {
+        int total = 10;
+        for (int i = 0; i < total; i++) {
+            player = stg.makeLoadout(SmiteTeamGenerator.Positions.values()[(int)(Math.random() * 5)]);
+            System.out.println(player);
+        }
+    }
+
+    @Test
     public void testForAllGods() {
 
         int totalAttempts = 0;

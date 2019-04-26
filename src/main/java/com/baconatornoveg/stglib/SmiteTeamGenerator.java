@@ -171,6 +171,7 @@ public class SmiteTeamGenerator {
         God player = null;
         List<Item> playerBuild = null;
         List<Item> build;
+        List<Item> relics =  new ArrayList<>();
 
         switch (position) {
 
@@ -208,7 +209,16 @@ public class SmiteTeamGenerator {
                 break;
         }
 
-        return new Player(player, playerBuild);
+        Item firstRelic;
+        Item secondRelic;
+        firstRelic = getRelic();
+        secondRelic = getRelic();
+        while (firstRelic.equals(secondRelic)) {
+            secondRelic = getRelic();
+        }
+        relics.add(firstRelic);
+        relics.add(secondRelic);
+        return new Player(player, playerBuild, relics);
     }
 
     private List<Item> processBuild(God god, List<Item> oBuild) {
@@ -385,6 +395,12 @@ public class SmiteTeamGenerator {
             }
         }
         return boot;
+    }
+
+    private Item getRelic() {
+        Item relic;
+        relic = RELICS.get((int)(Math.random() * RELICS.size()));
+        return relic;
     }
 
     private Item getPhysicalBoot(boolean isOffensive) {

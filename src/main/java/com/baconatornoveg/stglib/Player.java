@@ -7,10 +7,12 @@ public class Player {
 
     private God god;
     private List<Item> build;
+    private List<Item> relics;
 
-    public Player(God god, List<Item> build) {
+    public Player(God god, List<Item> build, List<Item> relics) {
         this.god = god;
         this.build = build;
+        this.relics = relics;
     }
 
     public God getGod() {
@@ -25,12 +27,21 @@ public class Player {
         return buildList;
     }
 
+    public List<String> getRelics() {
+        List<String> relicsList = new ArrayList<>();
+        for (Item relic : relics) {
+            relicsList.add(relic.toString());
+        }
+        return relicsList;
+    }
+
     public List<Item> getBuildAsItems() {
         return build;
     }
+    public List<Item> getRelicsAsItems() { return relics; }
 
     public String toString() {
-        return this.god + " - " + build.toString();
+        return this.god + " - " + build.toString() + " - Relics: " + relics.toString();
     }
 
 }
