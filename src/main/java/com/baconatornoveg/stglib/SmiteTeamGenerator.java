@@ -52,6 +52,7 @@ public class SmiteTeamGenerator {
                 bootsFile = bootsUrl.openStream();
                 godsFile = godsUrl.openStream();
                 itemsFile = itemsUrl.openStream();
+                relicsFile = relicsUrl.openStream();
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Failed to get the lists from GitHub. Falling back to compiled lists.");
