@@ -35,6 +35,22 @@ public class Player {
         return relicsList;
     }
 
+    public String[] getBuildAsStringArray() {
+        String[] buildArray = new String[6];
+        for (int i = 0; i < 6; i++) {
+            buildArray[i] = build.get(i).toString();
+        }
+        return buildArray;
+    }
+    
+    public String[] getRelicsAsStringArray() {
+        String[] relicsArray = new String[2];
+        for (int i = 0; i < 2; i++) {
+            relicsArray[i] = relics.get(i).toString();
+        }
+        return relicsArray;
+    }
+
     public List<Item> getBuildAsItems() {
         return build;
     }
