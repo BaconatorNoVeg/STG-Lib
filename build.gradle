@@ -9,6 +9,7 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:23.0'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
@@ -17,7 +18,7 @@ dependencies {
 // Archive info
 jar {
     baseName 'STGLib'
-    version '1.5.13'
+    version '1.5.17'
 }
 
 test {

@@ -1,5 +1,8 @@
 package com.baconatornoveg.stglib;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +58,22 @@ public class Player {
         return build;
     }
     public List<Item> getRelicsAsItems() { return relics; }
+
+    public String toJSON() {
+        JSONObject returnObj = new JSONObject();
+        JSONArray jsonBuild = new JSONArray();
+        for (Item i : build) {
+            jsonBuild.add(i.toString());
+        }
+        JSONArray jsonRelics = new JSONArray();
+        for (Item i : relics) {
+            jsonRelics.add(i.toString());
+        }
+        returnObj.put("god", god.getName());
+        returnObj.put("build", jsonBuild);
+        returnObj.put("relics", jsonRelics);
+        return returnObj.toJSONString();
+    }
 
     public String toString() {
         return this.god + " - " + build.toString() + " - Relics: " + relics.toString();
