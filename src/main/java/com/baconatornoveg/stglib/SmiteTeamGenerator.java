@@ -28,7 +28,7 @@ public class SmiteTeamGenerator {
     }
 
     public String getVersion() {
-        return "1.5.13";
+        return "1.5.21";
     }
 
     public void getLists(boolean local) {
