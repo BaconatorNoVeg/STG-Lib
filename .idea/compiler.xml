@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="STG-Lib.main" target="11" />
-      <module name="STG-Lib.test" target="11" />
+      <module name="STG-Lib.main" target="12" />
+      <module name="STG-Lib.test" target="12" />
     </bytecodeTargetLevel>
   </component>
 </project>
