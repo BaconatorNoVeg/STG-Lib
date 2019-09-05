@@ -23,12 +23,10 @@ public class SmiteTeamGenerator {
 
     private Random rand = new Random();
 
-    public enum Positions {
-        ASSASSIN, HUNTER, MAGE, WARRIOR, GUARDIAN
-    }
+    public final String[] positions = {"assassin", "hunter", "mage", "warrior", "guardian"};
 
     public String getVersion() {
-        return "1.5.21";
+        return "1.6.0";
     }
 
     public void getLists(boolean local) {
@@ -80,7 +78,8 @@ public class SmiteTeamGenerator {
         while (in.hasNextLine()) {
             String line = in.nextLine();
             String[] values = line.split(",");
-            BOOTS.add(new Item(values[0], values[1], values[2], values[3]));
+            String[] availability = {"TRUE", "TRUE", "TRUE", "TRUE", "TRUE"};
+            BOOTS.add(new Item(values[0], values[1], values[2], values[3], availability));
         }
         in.close();
         in = new Scanner(godsFile);
@@ -98,7 +97,8 @@ public class SmiteTeamGenerator {
         while (in.hasNextLine()) {
             String line = in.nextLine();
             String[] values = line.split(",");
-            ITEMS.add(new Item(values[0], values[1], values[2], values[3]));
+            String[] availability = {values[4], values[5], values[6], values[7], values[8]};
+            ITEMS.add(new Item(values[0], values[1], values[2], values[3], availability));
         }
         in.close();
 
@@ -107,20 +107,21 @@ public class SmiteTeamGenerator {
         while (in.hasNextLine()) {
             String line = in.nextLine();
             String[] values = line.split(",");
-            RELICS.add(new Item(values[0], "TRUE", "TRUE", "Relic"));
+            String[] availability = {"TRUE", "TRUE", "TRUE", "TRUE", "TRUE"};
+            RELICS.add(new Item(values[0], "TRUE", "TRUE", "Relic", availability));
         }
         in.close();
         System.out.println("STG-Lib successfully loaded " + BOOTS.size() + " boots, " + GODS.size() + " gods, " + RELICS.size() + " relics, and " + ITEMS.size() + " items.");
     }
 
     // Implementing Fisher–Yates shuffle
-    private static void shufflePositions(Positions[] ar) {
+    private static void shufflePositions(String[] ar) {
         // If running on Java 6 or older, use `new Random()` on RHS here
         Random rnd = ThreadLocalRandom.current();
         for (int i = ar.length - 1; i > 0; i--) {
             int index = rnd.nextInt(i + 1);
             // Simple swap
-            Positions a = ar[index];
+            String a = ar[index];
             ar[index] = ar[i];
             ar[i] = a;
         }
@@ -131,7 +132,6 @@ public class SmiteTeamGenerator {
         isForcingBoots = forceBoots;
         this.buildType = buildType;
         Team team = new Team(this);
-        Positions[] positions = Positions.values();
         if (forceBalanced) {
             // Generate a team that does not duplicate positions
             shufflePositions(positions);
@@ -168,47 +168,14 @@ public class SmiteTeamGenerator {
         return team;
     }
 
-    public Player makeLoadout(Positions position) {
+    public Player makeLoadout(String position) {
         God player = null;
         List<Item> playerBuild = null;
         List<Item> build;
-        List<Item> relics =  new ArrayList<>();
-
-        switch (position) {
-
-            case MAGE:
-                player = getGod("Mage");
-                build = generateBuild(player);
-                playerBuild = processBuild(player, build);
-                break;
-
-            case GUARDIAN:
-                player = getGod("Guardian");
-                build = generateBuild(player);
-                playerBuild = processBuild(player, build);
-                break;
-
-            case WARRIOR:
-                player = getGod("Warrior");
-                build = generateBuild(player);
-                playerBuild = processBuild(player, build);
-                break;
-
-            case ASSASSIN:
-                player = getGod("Assassin");
-                build = generateBuild(player);
-                playerBuild = processBuild(player, build);
-                break;
-
-            case HUNTER:
-                player = getGod("Hunter");
-                build = generateBuild(player);
-                playerBuild = processBuild(player, build);
-                break;
-
-            default:
-                break;
-        }
+        List<Item> relics = new ArrayList<>();
+        player = getGod(position);
+        build = generateBuild(player);
+        playerBuild = processBuild(player, build);
 
         Item firstRelic;
         Item secondRelic;
@@ -222,6 +189,19 @@ public class SmiteTeamGenerator {
         return new Player(player, playerBuild, relics);
     }
 
+    private boolean checkMasks(List<Item> build) {
+        int numMasks = 0;
+        for (Item item : build) {
+            if (item.isMask()) {
+                numMasks++;
+                if (numMasks > 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private List<Item> processBuild(God god, List<Item> oBuild) {
         List<Item> build = oBuild;
         List<String> buildItems = new ArrayList<>();
@@ -231,11 +211,9 @@ public class SmiteTeamGenerator {
             for (Item i : build) {
                 buildItems.add(i.toString());
             }
-            if (god.getPosition().equals("Hunter") && (buildItems.contains("Hastened Katana") || buildItems.contains("Stone Cutting Sword") || buildItems.contains("Masamune") || buildItems.contains("Golden Blade") || buildItems.contains("Rangda's Mask"))) {
+            if (!god.checkBuild(build)) {
                 build = generateBuild(god);
-            } else if ((god.getPosition().equals("Assassin") || god.getPosition().equals("Hunter") || god.getPosition().equals("Mage")) && (buildItems.contains("Rangda's Mask") || (buildItems.contains("Lono's Mask") && buildItems.contains("Bumba's Mask")))) {
-                build = generateBuild(god);
-            } else if ((god.getPosition().equals("Warrior") || god.getPosition().equals("Guardian")) && (buildItems.contains("Lono's Mask") || (buildItems.contains("Rangda's Mask") && buildItems.contains("Bumba's Mask")))) {
+            } else if (!checkMasks(build)) {
                 build = generateBuild(god);
             } else {
                 boolean buildReady = false;
@@ -245,8 +223,8 @@ public class SmiteTeamGenerator {
                     if (i.isOffensive() && i.isDefensive()) {
                         offensiveCount++;
                         defensiveCount++;
-                    }
-                    else if (i.isOffensive()) offensiveCount++; else if (i.isDefensive()) defensiveCount++;
+                    } else if (i.isOffensive()) offensiveCount++;
+                    else if (i.isDefensive()) defensiveCount++;
                 }
                 switch (buildType) {
                     default:
@@ -256,58 +234,32 @@ public class SmiteTeamGenerator {
                         break;
                     case 1:
                         // Full offensive
-                        if (offensiveCount < 6) build = generateBuild(god); else buildReady = true;
+                        if (offensiveCount < 6) build = generateBuild(god);
+                        else buildReady = true;
                         break;
                     case 2:
                         // Full defensive
-                        if (defensiveCount < 6) build = generateBuild(god); else buildReady = true;
+                        if (defensiveCount < 6) build = generateBuild(god);
+                        else buildReady = true;
                         break;
                     case 3:
                         // Half-and-half
-                        if (offensiveCount < 3 || defensiveCount < 3) build = generateBuild(god); else buildReady = true;
+                        if (offensiveCount < 3 || defensiveCount < 3) build = generateBuild(god);
+                        else buildReady = true;
                         break;
                     case 4:
                         // Equivalent to isForcingOffensive and isForcingDefensive both true
                         if ("Assassin".equalsIgnoreCase(god.getPosition()) || "Hunter".equalsIgnoreCase(god.getPosition()) || "Mage".equalsIgnoreCase(god.getPosition()) || ("Warrior".equalsIgnoreCase(god.getPosition()) && warriorsOffensive)) {
-                            if (offensiveCount < 6) build = generateBuild(god); else buildReady = true;
+                            if (offensiveCount < 6) build = generateBuild(god);
+                            else buildReady = true;
                         } else {
-                            if (defensiveCount < 6) build = generateBuild(god); else buildReady = true;
+                            if (defensiveCount < 6) build = generateBuild(god);
+                            else buildReady = true;
                         }
                         break;
                 }
                 if (buildReady) break;
             }
-
-            /* else if ((god.getPosition().equals("Assassin") || god.getPosition().equals("Hunter") || god.getPosition().equals("Mage")) && isForcingOffensive) {
-                int offensiveCount = 0;
-                int defensiveCount = 0;
-                for (Item i : build) {
-                    if (i.isOffensive()) {
-                        offensiveCount++;
-                    } else if (i.isDefensive()) {
-                        defensiveCount++;
-                    }
-                }
-                if (offensiveCount < 6) {
-                    build = generateBuild(god);
-                } else {
-                    break;
-                }
-            } else if ((god.getPosition().equals("Warrior") || god.getPosition().equals("Guardian")) && isForcingDefensive) {
-                int defensiveCount = 0;
-                for (Item i : build) {
-                    if (i.isDefensive()) {
-                        defensiveCount++;
-                    }
-                }
-                if ((god.getPosition().equals("Guardian") && defensiveCount < 6) || (god.getPosition().equals("Warrior") && defensiveCount < 5)) {
-                    build = generateBuild(god);
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }*/
         }
         playerBuild = build;
         buildItems.clear();
@@ -324,9 +276,10 @@ public class SmiteTeamGenerator {
                 case "assassin":
                 case "hunter":
                     if (god.getName().equals("Ratatoskr")) {
-                        generation.add(new Item("Acorn of Yggdrasil", "true", "false", "BOTH"));
+                        String[] availability = {"TRUE", "FALSE", "FALSE", "FALSE", "FALSE"};
+                        generation.add(new Item("Acorn of Yggdrasil", "true", "false", "BOTH", availability));
                     } else {
-                        if ((int)(Math.random() * 100) > 35  && !isForcingBoots) {
+                        if ((int) (Math.random() * 100) > 35 && !isForcingBoots) {
                             generation.add(getItem("physical"));
                         } else {
                             generation.add(getBoot(god));
@@ -334,7 +287,7 @@ public class SmiteTeamGenerator {
                     }
                     break;
                 case "warrior":
-                    if ((int)(Math.random() * 100) > 35 && !isForcingBoots) {
+                    if ((int) (Math.random() * 100) > 35 && !isForcingBoots) {
                         generation.add(getItem("physical"));
                     } else {
                         generation.add(getBoot(god));
@@ -355,14 +308,8 @@ public class SmiteTeamGenerator {
         } else {
             switch (god.getPosition().toLowerCase()) {
                 case "mage":
-                    if ((int)(Math.random() * 100) > 35 && !isForcingBoots) {
-                        generation.add(getItem("magical"));
-                    } else {
-                        generation.add(getBoot(god));
-                    }
-                    break;
                 case "guardian":
-                    if ((int)(Math.random() * 100) > 35 && !isForcingBoots) {
+                    if ((int) (Math.random() * 100) > 35 && !isForcingBoots) {
                         generation.add(getItem("magical"));
                     } else {
                         generation.add(getBoot(god));
@@ -385,14 +332,14 @@ public class SmiteTeamGenerator {
 
     private Item getBoot(God god) {
         Item boot;
-        boot = BOOTS.get((int)(Math.random() * BOOTS.size()));
+        boot = BOOTS.get((int) (Math.random() * BOOTS.size()));
         if (god.isPhysical()) {
             while (boot.isMagical()) {
-                boot = BOOTS.get((int)(Math.random() * BOOTS.size()));
+                boot = BOOTS.get((int) (Math.random() * BOOTS.size()));
             }
         } else {
             while (boot.isPhysical()) {
-                boot = BOOTS.get((int)(Math.random() * BOOTS.size()));
+                boot = BOOTS.get((int) (Math.random() * BOOTS.size()));
             }
         }
         return boot;
@@ -400,42 +347,8 @@ public class SmiteTeamGenerator {
 
     private Item getRelic() {
         Item relic;
-        relic = RELICS.get((int)(Math.random() * RELICS.size()));
+        relic = RELICS.get((int) (Math.random() * RELICS.size()));
         return relic;
-    }
-
-    private Item getPhysicalBoot(boolean isOffensive) {
-        Item boot;
-        boot = BOOTS.get(rand.nextInt(BOOTS.size()));
-        if (isOffensive) {
-            while (boot.isMagical() || !boot.isOffensive()) {
-                boot = BOOTS.get(rand.nextInt(BOOTS.size()));
-            }
-        } else {
-            while (boot.isMagical()) {
-                boot = BOOTS.get(rand.nextInt(BOOTS.size()));
-            }
-        }
-        return boot;
-    }
-
-    private Item getMagicalBoot(boolean isOffensive, boolean isDefensive) {
-        Item boot;
-        boot = BOOTS.get(rand.nextInt(BOOTS.size()));
-        if (isOffensive) {
-            while (boot.isPhysical() || !boot.isOffensive()) {
-                boot = BOOTS.get((rand.nextInt(BOOTS.size())));
-            }
-        } else if (isDefensive) {
-            while (boot.isPhysical() || !boot.isDefensive()) {
-                boot = BOOTS.get(rand.nextInt(BOOTS.size()));
-            }
-        } else {
-            while (boot.isPhysical()) {
-                boot = BOOTS.get(rand.nextInt(BOOTS.size()));
-            }
-        }
-        return boot;
     }
 
     private Item getItem(String type) {

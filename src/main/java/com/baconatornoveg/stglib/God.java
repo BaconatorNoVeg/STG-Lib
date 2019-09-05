@@ -1,6 +1,7 @@
 package com.baconatornoveg.stglib;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class God {
 
@@ -12,6 +13,15 @@ public class God {
     protected God(String name, String position) {
         this.name = name;
         this.position = position;
+    }
+
+    public boolean checkBuild(List<Item> build) {
+        for (Item aBuild : build) {
+            if (!aBuild.available(this)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean isPhysical() {

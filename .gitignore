@@ -70,3 +70,5 @@ fabric.properties
 build/
 
 .idea/inspectionProfiles
+
+buildprintouts.csv

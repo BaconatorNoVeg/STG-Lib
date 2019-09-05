@@ -42,7 +42,7 @@ public class Player {
         }
         return buildArray;
     }
-    
+
     public String[] getRelicsAsStringArray() {
         String[] relicsArray = new String[2];
         for (int i = 0; i < 2; i++) {
@@ -54,7 +54,10 @@ public class Player {
     public List<Item> getBuildAsItems() {
         return build;
     }
-    public List<Item> getRelicsAsItems() { return relics; }
+
+    public List<Item> getRelicsAsItems() {
+        return relics;
+    }
 
     public String toString() {
         return this.god + " - " + build.toString() + " - Relics: " + relics.toString();

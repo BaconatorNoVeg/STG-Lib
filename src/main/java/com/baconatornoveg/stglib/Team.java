@@ -39,13 +39,13 @@ public class Team {
     public void rerollPlayer(int index) {
         Player selectedPlayer = team.get(index);
         Player rerollingPlayer;
-        SmiteTeamGenerator.Positions[] positions = SmiteTeamGenerator.Positions.values();
+        String[] positions = stg.positions;
         if (!stg.isForcingBalanced) {
             ArrayList<God> taken = new ArrayList<>();
             for (Player i : team) {
                 taken.add(i.getGod());
             }
-            rerollingPlayer = stg.makeLoadout(positions[(int)(Math.random() * (positions.length))]);
+            rerollingPlayer = stg.makeLoadout(positions[(int) (Math.random() * (positions.length))]);
             boolean testing = true;
             while (testing) {
                 testing = false;
@@ -64,7 +64,7 @@ public class Team {
                 takenPositions.add(i.getGod().getPosition());
             }
             takenPositions.remove(index);
-            rerollingPlayer = stg.makeLoadout(positions[(int)(Math.random() * (positions.length))]);
+            rerollingPlayer = stg.makeLoadout(positions[(int) (Math.random() * (positions.length))]);
             boolean testing = true;
             while (testing) {
                 testing = false;
