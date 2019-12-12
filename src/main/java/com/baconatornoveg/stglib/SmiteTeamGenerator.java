@@ -37,15 +37,15 @@ public class SmiteTeamGenerator {
         InputStream relicsFile = null;
         boolean useLocal = local;
         if (!local) {
-            System.out.println("Attempting to fetch the current lists from Github...");
+            System.out.println("Attempting to fetch the current lists from GitLab...");
             try {
-                String bootsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/STG-Lib/master/Lists/boots.csv";
+                String bootsRemoteUrl = "https://gitlab.com/Codazed/STG-Lib/raw/master/Lists/boots.csv";
                 URL bootsUrl = new URL(bootsRemoteUrl);
-                String godsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/STG-Lib/master/Lists/gods.csv";
+                String godsRemoteUrl = "https://gitlab.com/Codazed/STG-Lib/raw/master/Lists/gods.csv";
                 URL godsUrl = new URL(godsRemoteUrl);
-                String itemsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/STG-Lib/master/Lists/items.csv";
+                String itemsRemoteUrl = "https://gitlab.com/Codazed/STG-Lib/raw/master/Lists/items.csv";
                 URL itemsUrl = new URL(itemsRemoteUrl);
-                String relicsRemoteUrl = "https://raw.githubusercontent.com/BaconatorNoVeg/STG-Lib/master/Lists/relics.csv";
+                String relicsRemoteUrl = "https://gitlab.com/Codazed/STG-Lib/raw/master/Lists/relics.csv";
                 URL relicsUrl = new URL(relicsRemoteUrl);
                 bootsFile = bootsUrl.openStream();
                 godsFile = godsUrl.openStream();
@@ -53,7 +53,7 @@ public class SmiteTeamGenerator {
                 relicsFile = relicsUrl.openStream();
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("Failed to get the lists from GitHub. Falling back to compiled lists.");
+                System.out.println("Failed to get the lists from GitLab. Falling back to compiled lists.");
                 useLocal = true;
             }
         }
