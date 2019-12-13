@@ -26,7 +26,7 @@ public class SmiteTeamGenerator {
     public final String[] positions = {"assassin", "hunter", "mage", "warrior", "guardian"};
 
     public String getVersion() {
-        return "1.6.0";
+        return "1.7.0";
     }
 
     public void getLists(boolean local) {
