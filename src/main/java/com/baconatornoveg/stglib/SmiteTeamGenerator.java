@@ -131,19 +131,24 @@ public class SmiteTeamGenerator {
         isForcingBalanced = forceBalanced;
         isForcingBoots = forceBoots;
         this.buildType = buildType;
+        List<God> gods = getGods(size, forceBalanced);
         Team team = new Team(this);
-        if (forceBalanced) {
+        for (God god : gods) {
+            Player player = makePlayer(god);
+            team.add(player);
+        }
+        /*if (forceBalanced) {
             // Generate a team that does not duplicate positions
             shufflePositions(positions);
             for (int i = 0; i < size; i++) {
-                Player loadout = makeLoadout(positions[i]);
+                Player loadout = makePlayer(positions[i]);
                 team.add(loadout);
             }
 
         } else {
             // Generate a team that can have more than one god of the same position
             for (int i = 0; i < size; i++) {
-                Player loadout = makeLoadout(positions[(int) (Math.random() * (positions.length))]);
+                Player loadout = makePlayer(positions[(int) (Math.random() * (positions.length))]);
                 team.add(loadout);
             }
             boolean dupes = true;
@@ -154,7 +159,7 @@ public class SmiteTeamGenerator {
                     for (int j = 0; j < size; j++) {
                         if ((i != j) && currentPlayer.getGod().equals(team.getPlayer(j).getGod())) {
                             dupes = true;
-                            team.set(j, makeLoadout(positions[(int) (Math.random() * (positions.length))]));
+                            team.set(j, makePlayer(positions[(int) (Math.random() * (positions.length))]));
                             break;
                         }
                     }
@@ -163,19 +168,17 @@ public class SmiteTeamGenerator {
                     }
                 }
             }
-        }
-
+        }*/
         return team;
     }
 
-    public Player makeLoadout(String position) {
-        God player = null;
+    public Player makePlayer(God god) {
         List<Item> playerBuild = null;
         List<Item> build;
         List<Item> relics = new ArrayList<>();
-        player = getGod(position);
-        build = generateBuild(player);
-        playerBuild = processBuild(player, build);
+        //god = getGod(position);
+        build = generateBuild(god);
+        playerBuild = processBuild(god, build);
 
         Item firstRelic;
         Item secondRelic;
@@ -186,7 +189,7 @@ public class SmiteTeamGenerator {
         }
         relics.add(firstRelic);
         relics.add(secondRelic);
-        return new Player(player, playerBuild, relics);
+        return new Player(god, playerBuild, relics);
     }
 
     private boolean checkMasks(List<Item> build) {
@@ -365,6 +368,20 @@ public class SmiteTeamGenerator {
             }
         }
         return item;
+    }
+
+    public List<God> getGods(int num, boolean uniquePositions) {
+        List<God> availableGods = GODS;
+        List<God> returnList = new ArrayList<>();
+        for(int i = 0; i < num; i++) {
+            God newGod = availableGods.remove((int) (Math.random() * availableGods.size()));
+            if (uniquePositions) {
+                String position = newGod.getPosition();
+                availableGods.removeIf(god -> position.equals(god.getPosition()));
+            }
+            returnList.add(newGod);
+        }
+        return returnList;
     }
 
     private God getGod(String position) {

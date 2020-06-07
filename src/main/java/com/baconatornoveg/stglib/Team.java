@@ -36,7 +36,7 @@ public class Team {
         return team.get(index);
     }
 
-    public void rerollPlayer(int index) {
+    /*public void rerollPlayer(int index) {
         Player selectedPlayer = team.get(index);
         Player rerollingPlayer;
         String[] positions = stg.positions;
@@ -45,13 +45,13 @@ public class Team {
             for (Player i : team) {
                 taken.add(i.getGod());
             }
-            rerollingPlayer = stg.makeLoadout(positions[(int) (Math.random() * (positions.length))]);
+            rerollingPlayer = stg.makePlayer(positions[(int) (Math.random() * (positions.length))]);
             boolean testing = true;
             while (testing) {
                 testing = false;
                 for (God takenGod : taken) {
                     if (rerollingPlayer.getGod().equals(takenGod) || rerollingPlayer.getGod().equals(selectedPlayer.getGod())) {
-                        rerollingPlayer = stg.makeLoadout(positions[(int) (Math.random() * (positions.length))]);
+                        rerollingPlayer = stg.makePlayer(positions[(int) (Math.random() * (positions.length))]);
                         testing = true;
                         break;
                     }
@@ -64,13 +64,13 @@ public class Team {
                 takenPositions.add(i.getGod().getPosition());
             }
             takenPositions.remove(index);
-            rerollingPlayer = stg.makeLoadout(positions[(int) (Math.random() * (positions.length))]);
+            rerollingPlayer = stg.makePlayer(positions[(int) (Math.random() * (positions.length))]);
             boolean testing = true;
             while (testing) {
                 testing = false;
                 for (String takenPosition : takenPositions) {
                     if (rerollingPlayer.getGod().getPosition().equals(takenPosition)) {
-                        rerollingPlayer = stg.makeLoadout(positions[(int) (Math.random() * (positions.length))]);
+                        rerollingPlayer = stg.makePlayer(positions[(int) (Math.random() * (positions.length))]);
                         testing = true;
                         break;
                     }
@@ -78,7 +78,7 @@ public class Team {
             }
             set(index, rerollingPlayer);
         }
-    }
+    }*/
 
     public String toString() {
         StringBuilder returnString = new StringBuilder();

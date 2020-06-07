@@ -3,6 +3,7 @@ package com.baconatornoveg.stglibtest;
 import com.baconatornoveg.stglib.Item;
 import com.baconatornoveg.stglib.Player;
 import com.baconatornoveg.stglib.SmiteTeamGenerator;
+import com.baconatornoveg.stglib.Team;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
@@ -43,7 +44,7 @@ public class STGLibTest {
     public void buildPrintOuts() {
         int total = 10;
         for (int i = 0; i < total; i++) {
-            player = stg.makeLoadout(stg.positions[(int) (Math.random() * 5)]);
+            player = stg.makePlayer(stg.getGods(1, false).get(0));
             System.out.println(player);
         }
     }
@@ -53,7 +54,7 @@ public class STGLibTest {
         int total = 10000;
         String buildsCsvString = "";
         for (int i = 0; i < total; i++) {
-            player = stg.makeLoadout(stg.positions[(int) (Math.random() * 5)]);
+            player = stg.makePlayer(stg.getGods(1, false).get(0));
             buildsCsvString += player.getGod().getName();
             for (String item : player.getBuild()) {
                 buildsCsvString += "," + item;
@@ -75,7 +76,7 @@ public class STGLibTest {
 
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
-            player = stg.makeLoadout(stg.positions[(int) (Math.random() * 5)]);
+            player = stg.makePlayer(stg.getGods(1, false).get(0));
             String god = player.getGod().getName();
             //System.out.println(god);
             for (String g : gods) {
@@ -107,7 +108,7 @@ public class STGLibTest {
         missingItems.add("Acorn of Yggdrasil");
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
-            player = stg.makeLoadout(stg.positions[(int) (Math.random() * 5)]);
+            player = stg.makePlayer(stg.getGods(1, false).get(0));
             List<String> build = player.getBuild();
             for (String item : items) {
                 for (String itm : build) {
@@ -142,7 +143,7 @@ public class STGLibTest {
     public void testForKatanasOnHunters() {
         stg.buildType = 0;
         for (int i = 0; i < maxTests; i++) {
-            player = stg.makeLoadout("hunter");
+            player = stg.makePlayer("hunter");
             List<String> build = player.getBuild();
             if (build.contains("Hastened Katana") || build.contains("Masamune") || build.contains("Stone Cutting Sword") || build.contains("Golden Blade")) {
                 System.err.println("A hunter build contains a forbidden hunter item.");
@@ -155,7 +156,7 @@ public class STGLibTest {
     @Test
     public void testForMultipleMasksOnBuild() {
         for (int i = 0; i < maxTests; i++) {
-            player = stg.makeLoadout(stg.positions[(int) (Math.random() * 5)]);
+            player = stg.makePlayer(stg.getGods(1, false).get(0));
             List<String> build = player.getBuild();
             int maskCount = 0;
             for (String j : build) {
@@ -173,7 +174,7 @@ public class STGLibTest {
     public void testForMasksOnWrongTypes() {
         stg.buildType = 0;
         for (int i = 0; i < maxTests; i++) {
-            player = stg.makeLoadout(stg.positions[(int) (Math.random() * 5)]);
+            player = stg.makePlayer(stg.getGods(1, false).get(0));
             List<String> build = player.getBuild();
             // Rangda's mask on assassins, hunters, or mages
             if ((player.getGod().getPosition().equals("Assassin") || player.getGod().getPosition().equals("Hunter") || player.getGod().getPosition().equals("Mage")) && build.contains("Rangda's Mask")) {
@@ -190,13 +191,44 @@ public class STGLibTest {
     public void testForItemsNotAvailable() {
         stg.buildType = 0;
         for (int i = 0; i < maxTests; i++) {
-            player = stg.makeLoadout(stg.positions[(int) (Math.random() * 5)]);
+            player = stg.makePlayer(stg.getGods(1, false).get(0));
             List<Item> build = player.getBuildAsItems();
             for (Item item : build) {
                 if (!item.available(player.getGod())) {
                     fail(item.toString() + " was put on " + player.getGod().getName());
                 }
             }
+        }
+    }
+
+    @Test
+    public void getTeamGeneratorStatistics() {
+        int testMultiplier = 25;
+        int totalAttempts = 0;
+        stg.buildType = 0;
+        List<Long> times = new ArrayList<>();
+        class TeamStat {
+            public final List<Team> teamList;
+            public final long elapsedTime;
+
+            TeamStat(List<Team> teamList, long elapsedTime) {
+                this.teamList = teamList;
+                this.elapsedTime = elapsedTime;
+            }
+        }
+        List<TeamStat> teamStats = new ArrayList<>();
+        for (int i = 1; i < 6; i++) {
+            long startTime = System.nanoTime();
+            List<Team> teams = new ArrayList<>();
+            for (int j = 0; j < maxTests * testMultiplier; j++) {
+                teams.add(stg.generateTeam(i, true, false, 0));
+            }
+            long endTime = System.nanoTime();
+            teamStats.add(new TeamStat(teams, endTime - startTime));
+        }
+        System.out.println("Finished generating " + maxTests * testMultiplier + " teams of each size.");
+        for (TeamStat teamStat : teamStats) {
+            System.out.println("Size " + teamStat.teamList.get(0).getSize() + " | Elapsed time: " + teamStat.elapsedTime / 1000000 + " seconds");
         }
     }
 
@@ -217,7 +249,7 @@ public class STGLibTest {
         List<Long> times = new ArrayList<>();
         for (int i = 0; i < maxTests * testMultiplier; i++) {
             totalAttempts++;
-            player = stg.makeLoadout(stg.positions[(int) (Math.random() * 5)]);
+            player = stg.makePlayer(stg.getGods(1, false).get(0));
             boolean defensiveGod = false;
             if (player.getGod().getPosition().equals("Warrior") || player.getGod().getPosition().equals("Guardian")) {
                 defensiveGod = true;
@@ -283,7 +315,7 @@ public class STGLibTest {
         boolean noBoots = false;
         int totalNoBoots = 0;
         for (int i = 0; i < maxTests; i++) {
-            player = stg.makeLoadout(stg.positions[(int) (Math.random() * 5)]);
+            player = stg.makePlayer(stg.getGods(1, false).get(0));
             List<String> build = player.getBuild();
             if (Collections.disjoint(build, boots)) {
                 noBoots = true;
