@@ -143,7 +143,7 @@ public class STGLibTest {
     public void testForKatanasOnHunters() {
         stg.buildType = 0;
         for (int i = 0; i < maxTests; i++) {
-            player = stg.makePlayer("hunter");
+            player = stg.makePlayer(stg.getGodFromPosition("hunter"));
             List<String> build = player.getBuild();
             if (build.contains("Hastened Katana") || build.contains("Masamune") || build.contains("Stone Cutting Sword") || build.contains("Golden Blade")) {
                 System.err.println("A hunter build contains a forbidden hunter item.");
@@ -203,33 +203,32 @@ public class STGLibTest {
 
     @Test
     public void getTeamGeneratorStatistics() {
-        int testMultiplier = 25;
-        int totalAttempts = 0;
-        stg.buildType = 0;
-        List<Long> times = new ArrayList<>();
+        int testMultiplier = 1;
         class TeamStat {
-            public final List<Team> teamList;
+            public final int teamSize;
             public final long elapsedTime;
 
-            TeamStat(List<Team> teamList, long elapsedTime) {
-                this.teamList = teamList;
+            TeamStat(int teamSize, long elapsedTime) {
+                this.teamSize = teamSize;
                 this.elapsedTime = elapsedTime;
             }
         }
         List<TeamStat> teamStats = new ArrayList<>();
         for (int i = 1; i < 6; i++) {
             long startTime = System.nanoTime();
-            List<Team> teams = new ArrayList<>();
             for (int j = 0; j < maxTests * testMultiplier; j++) {
-                teams.add(stg.generateTeam(i, true, false, 0));
+                stg.generateTeam(i, true, false, 0);
             }
             long endTime = System.nanoTime();
-            teamStats.add(new TeamStat(teams, endTime - startTime));
+            teamStats.add(new TeamStat(i, endTime - startTime));
         }
         System.out.println("Finished generating " + maxTests * testMultiplier + " teams of each size.");
+        long totalElapsed = 0;
         for (TeamStat teamStat : teamStats) {
-            System.out.println("Size " + teamStat.teamList.get(0).getSize() + " | Elapsed time: " + teamStat.elapsedTime / 1000000 + " seconds");
+            totalElapsed += teamStat.elapsedTime;
+            System.out.println("Size " + teamStat.teamSize + " | Elapsed time: " + teamStat.elapsedTime / 1000000 + " ms");
         }
+        System.out.println("Total time elapsed: " + totalElapsed / 1000000 + " ms or approximately " + totalElapsed / 1000000000 + " seconds.");
     }
 
     @Test
