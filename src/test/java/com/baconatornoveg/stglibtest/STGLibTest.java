@@ -216,8 +216,9 @@ public class STGLibTest {
         List<TeamStat> teamStats = new ArrayList<>();
         for (int i = 1; i < 6; i++) {
             long startTime = System.nanoTime();
+            System.out.println(i);
             for (int j = 0; j < maxTests * testMultiplier; j++) {
-                stg.generateTeam(i, true, false, 0);
+                Team team = stg.generateTeam(i, true, false, 0);
             }
             long endTime = System.nanoTime();
             teamStats.add(new TeamStat(i, endTime - startTime));

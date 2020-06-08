@@ -16,6 +16,8 @@ public class Item {
         this.availability = availability;
     }
 
+    public String getName() { return this.name; }
+
     public boolean isPhysical() {
         return isPhysical;
     }

@@ -78,7 +78,7 @@ public class SmiteTeamGenerator {
         while (in.hasNextLine()) {
             String line = in.nextLine();
             String[] values = line.split(",");
-            String[] availability = {"TRUE", "TRUE", "TRUE", "TRUE", "TRUE"};
+            String[] availability = {values[1], values[1], values[2], values[1], values[2]};
             BOOTS.add(new Item(values[0], values[1], values[2], values[3], availability));
         }
         in.close();
@@ -177,8 +177,9 @@ public class SmiteTeamGenerator {
         List<Item> build;
         List<Item> relics = new ArrayList<>();
         //god = getGod(position);
-        build = generateBuild(god);
-        playerBuild = processBuild(god, build);
+        build = getItems(god);
+        //playerBuild = processBuild(god, build);
+        playerBuild = build;
 
         Item firstRelic;
         Item secondRelic;
@@ -205,19 +206,14 @@ public class SmiteTeamGenerator {
         return true;
     }
 
-    private List<Item> processBuild(God god, List<Item> oBuild) {
-        List<Item> build = oBuild;
-        List<String> buildItems = new ArrayList<>();
+    private List<Item> processBuild(God god, List<Item> items) {
+        List<Item> build = items;
         List<Item> playerBuild;
         while (true) {
-            buildItems.clear();
-            for (Item i : build) {
-                buildItems.add(i.toString());
-            }
             if (!god.checkBuild(build)) {
-                build = generateBuild(god);
+                build = getItems(god);
             } else if (!checkMasks(build)) {
-                build = generateBuild(god);
+                build = getItems(god);
             } else {
                 boolean buildReady = false;
                 int offensiveCount = 0;
@@ -237,26 +233,26 @@ public class SmiteTeamGenerator {
                         break;
                     case 1:
                         // Full offensive
-                        if (offensiveCount < 6) build = generateBuild(god);
+                        if (offensiveCount < 6) build = getItems(god);
                         else buildReady = true;
                         break;
                     case 2:
                         // Full defensive
-                        if (defensiveCount < 6) build = generateBuild(god);
+                        if (defensiveCount < 6) build = getItems(god);
                         else buildReady = true;
                         break;
                     case 3:
                         // Half-and-half
-                        if (offensiveCount < 3 || defensiveCount < 3) build = generateBuild(god);
+                        if (offensiveCount < 3 || defensiveCount < 3) build = getItems(god);
                         else buildReady = true;
                         break;
                     case 4:
                         // Equivalent to isForcingOffensive and isForcingDefensive both true
                         if ("Assassin".equalsIgnoreCase(god.getPosition()) || "Hunter".equalsIgnoreCase(god.getPosition()) || "Mage".equalsIgnoreCase(god.getPosition()) || ("Warrior".equalsIgnoreCase(god.getPosition()) && warriorsOffensive)) {
-                            if (offensiveCount < 6) build = generateBuild(god);
+                            if (offensiveCount < 6) build = getItems(god);
                             else buildReady = true;
                         } else {
-                            if (defensiveCount < 6) build = generateBuild(god);
+                            if (defensiveCount < 6) build = getItems(god);
                             else buildReady = true;
                         }
                         break;
@@ -265,37 +261,24 @@ public class SmiteTeamGenerator {
             }
         }
         playerBuild = build;
-        buildItems.clear();
         return playerBuild;
     }
 
-    private List<Item> generateBuild(God god) {
-        List<Item> build = new ArrayList<>();
-        LinkedHashSet<Item> generation = new LinkedHashSet<>();
+    /*private List<Item> generateBuild(God god) {
+        List<Item> items = new ArrayList<>();
+        //LinkedHashSet<Item> generation = new LinkedHashSet<>();
         String type = god.getPosition();
         Item newItem;
-        if (type.equals("Assassin") || type.equals("Hunter") || type.equals("Warrior")) {
-            switch (type.toLowerCase()) {
-                case "assassin":
-                case "hunter":
-                    if (god.getName().equals("Ratatoskr")) {
-                        String[] availability = {"TRUE", "FALSE", "FALSE", "FALSE", "FALSE"};
-                        generation.add(new Item("Acorn of Yggdrasil", "true", "false", "BOTH", availability));
-                    } else {
-                        if ((int) (Math.random() * 100) > 35 && !isForcingBoots) {
-                            generation.add(getItem("physical"));
-                        } else {
-                            generation.add(getBoot(god));
-                        }
-                    }
-                    break;
-                case "warrior":
-                    if ((int) (Math.random() * 100) > 35 && !isForcingBoots) {
-                        generation.add(getItem("physical"));
-                    } else {
-                        generation.add(getBoot(god));
-                    }
-                    break;
+        if (type.matches("Assassin|Hunter|Warrior")) {
+            if ("Ratatoskr".equals(god.getName())) {
+                String[] availability = {"TRUE", "FALSE", "FALSE", "FALSE", "FALSE"};
+                items.add(new Item("Acorn of Yggdrasil", "true", "false", "BOTH", availability));
+            } else {
+                if ((int) (Math.random() * 100) > 35 && !isForcingBoots) {
+                    generation.add(getItem("physical"));
+                } else {
+                    generation.add(getBoot(god));
+                }
             }
             for (int i = 0; i < 5; i++) {
                 newItem = getItem("physical");
@@ -307,17 +290,11 @@ public class SmiteTeamGenerator {
                 generation.add(newItem);
             }
 
-            build.addAll(0, generation);
         } else {
-            switch (god.getPosition().toLowerCase()) {
-                case "mage":
-                case "guardian":
-                    if ((int) (Math.random() * 100) > 35 && !isForcingBoots) {
-                        generation.add(getItem("magical"));
-                    } else {
-                        generation.add(getBoot(god));
-                    }
-                    break;
+            if ((int) (Math.random() * 100) > 35 && !isForcingBoots) {
+                generation.add(getItem("magical"));
+            } else {
+                generation.add(getBoot(god));
             }
             for (int i = 0; i < 5; i++) {
                 newItem = getItem("magical");
@@ -328,10 +305,10 @@ public class SmiteTeamGenerator {
                 newItem = getItem("magical");
                 generation.add(newItem);
             }
-            build.addAll(0, generation);
         }
-        return build;
-    }
+        items.addAll(0, generation);
+        return items;
+    }*/
 
     private Item getBoot(God god) {
         Item boot;
@@ -370,8 +347,37 @@ public class SmiteTeamGenerator {
         return item;
     }
 
+    private List<Item> getItems(God god) {
+        boolean forceBoot = isForcingBoots;
+        List<Item> availableItems = new ArrayList<>(ITEMS);
+        List<Item> availableBoots = new ArrayList<>(BOOTS);
+        List<Item> returnList = new ArrayList<>();
+        availableBoots.removeIf(boot -> !boot.available(god));
+        if ("Ratatoskr".equals(god.getName())) {
+            if (forceBoot) {
+                String[] availability = {"TRUE", "FALSE", "FALSE", "FALSE", "FALSE"};
+                returnList.add(new Item("Acorn of Yggdrasil", "true", "false", "BOTH", availability));
+            }
+        } else if (forceBoot) {
+            Item newBoot = availableBoots.remove((int) (Math.random() * availableBoots.size()));
+            returnList.add(newBoot);
+        } else {
+            availableItems.addAll(availableBoots);
+        }
+        while(returnList.size() < 6) {
+            Item newItem = availableItems.remove((int) (Math.random() * availableItems.size()));
+            if (newItem.isMask()) {
+                availableItems.removeIf(Item::isMask);
+            } else if (BOOTS.contains(newItem)) {
+                availableItems.removeIf(BOOTS::contains);
+            }
+            returnList.add(newItem);
+        }
+        return returnList;
+    }
+
     public List<God> getGods(int num, boolean uniquePositions) {
-        List<God> availableGods = GODS;
+        List<God> availableGods = new ArrayList<>(GODS);
         List<God> returnList = new ArrayList<>();
         for(int i = 0; i < num; i++) {
             God newGod = availableGods.remove((int) (Math.random() * availableGods.size()));
@@ -384,12 +390,10 @@ public class SmiteTeamGenerator {
         return returnList;
     }
 
-    private God getGod(String position) {
-        God god = GODS.get((int) (Math.random() * (GODS.size())));
-        while (!god.getPosition().equalsIgnoreCase(position)) {
-            god = GODS.get((int) (Math.random() * (GODS.size())));
-        }
-        return god;
+    public God getGodFromPosition(String position) {
+        List<God> availableGods = GODS;
+        availableGods.removeIf(god -> !position.equalsIgnoreCase(god.getPosition()));
+        return availableGods.get((int) (Math.random() * (availableGods.size())));
     }
 
     public List<Item> getBOOTS() {
