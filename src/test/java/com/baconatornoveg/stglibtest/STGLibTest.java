@@ -104,7 +104,10 @@ public class STGLibTest {
         List<String> testedItems = new ArrayList<>();
         List<String> missingItems = items;
         missingItems.addAll(boots);
-        missingItems.add("Acorn of Yggdrasil");
+        missingItems.add("Evergreen Acorn");
+        missingItems.add("Thickbark Acorn");
+        missingItems.add("Bristlebush Acorn");
+        missingItems.add("Thistlethorn Acorn");
         for (int i = 0; i < maxTests; i++) {
             totalAttempts++;
             player = stg.makeLoadout(stg.positions[(int) (Math.random() * 5)]);
@@ -144,7 +147,7 @@ public class STGLibTest {
         for (int i = 0; i < maxTests; i++) {
             player = stg.makeLoadout("hunter");
             List<String> build = player.getBuild();
-            if (build.contains("Hastened Katana") || build.contains("Masamune") || build.contains("Stone Cutting Sword") || build.contains("Golden Blade")) {
+            if (build.contains("Hastened Katana") || build.contains("Masamune") || build.contains("Stone Cutting Sword") || build.contains("Golden Blade") || build.contains("Serrated Edge")) {
                 System.err.println("A hunter build contains a forbidden hunter item.");
                 System.err.println("Build: " + player.toString());
                 fail("A hunter build contains a forbidden hunter item.");

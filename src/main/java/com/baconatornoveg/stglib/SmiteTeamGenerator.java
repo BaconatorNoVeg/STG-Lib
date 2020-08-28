@@ -277,7 +277,13 @@ public class SmiteTeamGenerator {
                 case "hunter":
                     if (god.getName().equals("Ratatoskr")) {
                         String[] availability = {"TRUE", "FALSE", "FALSE", "FALSE", "FALSE"};
-                        generation.add(new Item("Acorn of Yggdrasil", "true", "false", "BOTH", availability));
+                        Item[] acorns = {
+                                new Item("Evergreen Acorn", "true", "false", "BOTH", availability),
+                                new Item("Thickbark Acorn", "true", "false", "BOTH", availability),
+                                new Item("Bristlebush Acorn", "true", "false", "BOTH", availability),
+                                new Item("Thistlethorn Acorn", "true", "false", "BOTH", availability)
+                        };
+                        generation.add(acorns[(int) (Math.random() * acorns.length)]);
                     } else {
                         if ((int) (Math.random() * 100) > 35 && !isForcingBoots) {
                             generation.add(getItem("physical"));
